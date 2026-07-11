@@ -30,14 +30,6 @@ export default function AuthLayout({ children }) {
               </p>
             </div>
 
-            <div className="mt-10 rounded-2xl border border-white/20 bg-white/10 p-4 text-sm text-emerald-50">
-              <p className="font-semibold">Akun demo</p>
-              <div className="mt-2 space-y-1 text-emerald-100/90">
-                <p>Admin: admin@eduonline.id / admin123</p>
-                <p>Dosen: dosen@eduonline.id / dosen123</p>
-                <p>Mahasiswa: mahasiswa@eduonline.id / mhs123</p>
-              </div>
-            </div>
           </div>
 
           <div className="p-8 sm:p-10 lg:p-12">{children}</div>
