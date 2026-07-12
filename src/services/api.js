@@ -53,6 +53,8 @@ export const getAttendance = (classId) => api.get(`/classes/${classId}/attendanc
 // Pengumuman
 export const getAnnouncements = () => api.get("/announcements");
 export const postAnnouncement = (payload) => api.post("/announcements", payload);
+export const updateAnnouncement = (id, payload) =>api.put(`/announcements/${id}`, payload);
+export const deleteAnnouncement = (id) =>api.delete(`/announcements/${id}`);
 
 // User (admin)
 export const getUsers = (q = "") => api.get(`/users?q=${q}`);
