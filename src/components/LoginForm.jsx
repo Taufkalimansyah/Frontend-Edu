@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { Eye, EyeOff, Loader2, Lock, Mail } from "lucide-react";
 
 export default function LoginForm({ onSubmit, loading, error }) {
-  const [email, setEmail] = useState("admin@eduonline.id");
-  const [password, setPassword] = useState("admin123");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = (e) => {
@@ -26,7 +26,7 @@ export default function LoginForm({ onSubmit, loading, error }) {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              placeholder="nama@eduonline.id"
+              placeholder="Masukan Email"
               className="w-full rounded-2xl border border-slate-700 bg-slate-950/70 py-3 pl-10 pr-4 text-sm text-white outline-none ring-0 placeholder:text-slate-500 focus:border-emerald-500"
             />
           </div>

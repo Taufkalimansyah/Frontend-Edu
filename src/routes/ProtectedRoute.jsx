@@ -1,11 +1,58 @@
 import { Navigate } from "react-router-dom";
 
-export default function ProtectedRoute({ children }) {
-  const token = localStorage.getItem("eduonline_token");
+export default function ProtectedRoute({
+    children,
+    role
+}) {
 
-  if (!token) {
-    return <Navigate to="/login" replace />;
-  }
+    const token = localStorage.getItem(
+        "eduonline_token"
+    );
 
-  return children;
+    const user = JSON.parse(
+        localStorage.getItem("user")
+    );
+
+    if (!token || !user) {
+        return <Navigate to="/login" replace />;
+    }
+
+    if (role && user.role !== role) {
+
+        switch (user.role) {
+            case "admin":
+                return (
+                    <Navigate
+                        to="/admin/dashboard"
+                        replace
+                    />
+                );
+
+            case "mahasiswa":
+                return (
+                    <Navigate
+                        to="/mahasiswa/dashboard"
+                        replace
+                    />
+                );
+
+            case "dosen":
+                return (
+                    <Navigate
+                        to="/dosen/dashboard"
+                        replace
+                    />
+                );
+
+            default:
+                return (
+                    <Navigate
+                        to="/login"
+                        replace
+                    />
+                );
+        }
+    }
+
+    return children;
 }

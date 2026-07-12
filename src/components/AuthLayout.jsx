@@ -20,13 +20,13 @@ export default function AuthLayout({ children }) {
             <div className="mt-10">
               <div className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-sm text-emerald-50">
                 <Sparkles size={14} />
-                Auth terhubung ke backend Laravel
+                EduOnline LMS
               </div>
               <h1 className="mt-5 text-3xl font-semibold leading-tight sm:text-4xl">
-                Masuk atau daftarkan akun Anda untuk mulai belajar.
+                Masukan anda untuk mengakses EduOnline.
               </h1>
               <p className="mt-4 max-w-xl text-sm leading-7 text-emerald-50/90">
-                Semua proses login dan register diproses melalui endpoint Laravel Sanctum yang terpisah dan rapi.
+                EduOnline adalah platform Learning Management System (LMS) modern yang dirancang untuk mempermudah proses belajar-mengajar secara digital. Dengan fitur manajemen kelas, materi interaktif, dan pelacakan nilai yang terintegrasi, EduOnline menciptakan ekosistem pembelajaran online yang efektif, fleksibel, dan mudah diakses kapan saja, di mana saja.
               </p>
             </div>
 
