@@ -24,7 +24,15 @@ export default function Login() {
       localStorage.setItem("eduonline_token", token);
       localStorage.setItem("user", JSON.stringify(user));
 
-      navigate("/admin/dashboard");
+      if (user.role === "admin") {
+          navigate("/admin/dashboard");
+      }
+      else if (user.role === "mahasiswa") {
+          navigate("/mahasiswa/dashboard");
+      }
+      else if (user.role === "dosen") {
+          navigate("/dosen/dashboard");
+}
     } catch (err) {
       setError(
         err.response?.data?.message ||
