@@ -77,7 +77,7 @@ export default function Nilai() {
 
             <Sidebar />
 
-            <main className="flex-1 ml-72 p-10">
+            <main className="flex-1 ml-72 p-8">
 
                 {/* HEADER */}
 
@@ -85,40 +85,40 @@ export default function Nilai() {
 
                     <div>
 
-                        <h1 className="text-5xl font-bold text-slate-900">
+                        <h1 className="text-2xl font-bold text-slate-900">
                             Laporan Nilai
                         </h1>
 
-                        <p className="mt-3 text-2xl text-slate-500">
+                        <p className="mt-1 text-sm text-slate-500">
                             Semester Ganjil 2023/2024 • Kartu Hasil Studi
                         </p>
 
                     </div>
 
-                    <div className="flex gap-4">
+                    <div className="flex gap-3">
 
                         <button className="
-                            flex items-center gap-3
+                            flex items-center gap-2
                             rounded-xl border
                             bg-white
-                            px-6 py-4
-                            text-lg
+                            px-4 py-2.5
+                            text-sm
                             shadow-sm
                         ">
-                            <Download size={20}/>
+                            <Download size={16}/>
                             Download PDF
                         </button>
 
                         <button className="
-                            flex items-center gap-3
+                            flex items-center gap-2
                             rounded-xl
                             bg-emerald-700
-                            px-6 py-4
-                            text-lg
+                            px-4 py-2.5
+                            text-sm
                             text-white
                             shadow-sm
                         ">
-                            <Printer size={20}/>
+                            <Printer size={16}/>
                             Print KHS
                         </button>
 
@@ -129,22 +129,22 @@ export default function Nilai() {
                 {/* SUMMARY CARD */}
 
                 <div className="
-                    mt-10
+                    mt-6
                     grid
                     grid-cols-3
-                    gap-6
+                    gap-5
                 ">
 
                     {/* IPK */}
 
                     <div className="
-                        rounded-3xl
+                        rounded-2xl
                         bg-slate-900
-                        p-8
+                        p-6
                         text-white
                     ">
                         <p className="
-                            text-lg
+                            text-xs
                             uppercase
                             tracking-widest
                             text-slate-400
@@ -153,17 +153,17 @@ export default function Nilai() {
                         </p>
 
                         <h2 className="
-                            mt-4
-                            text-6xl
+                            mt-2
+                            text-3xl
                             font-bold
                         ">
                             3.85
                         </h2>
 
                         <p className="
-                            mt-3
+                            mt-2
                             text-emerald-400
-                            text-lg
+                            text-sm
                         ">
                             +0.12 dari semester lalu
                         </p>
@@ -172,17 +172,17 @@ export default function Nilai() {
                     {/* IPS */}
 
                     <div className="
-                        rounded-3xl
+                        rounded-2xl
                         bg-white
                         border
-                        p-8
+                        p-6
                         flex
                         justify-between
                     ">
                         <div>
 
                             <p className="
-                                text-lg
+                                text-xs
                                 uppercase
                                 tracking-widest
                                 text-slate-500
@@ -191,25 +191,25 @@ export default function Nilai() {
                             </p>
 
                             <h2 className="
-                                mt-4
-                                text-6xl
+                                mt-2
+                                text-3xl
                                 font-bold
                             ">
                                 3.78
                             </h2>
 
                             <div className="
-                                mt-5
-                                flex items-center gap-3
+                                mt-3
+                                flex items-center gap-2
                             ">
                                 <div className="
-                                    h-3
-                                    w-32
+                                    h-2
+                                    w-24
                                     rounded-full
                                     bg-slate-200
                                 ">
                                     <div className="
-                                        h-3
+                                        h-2
                                         w-[80%]
                                         rounded-full
                                         bg-emerald-600
@@ -217,6 +217,7 @@ export default function Nilai() {
                                 </div>
 
                                 <span className="
+                                    text-xs
                                     text-emerald-700
                                     font-semibold
                                 ">
@@ -227,14 +228,14 @@ export default function Nilai() {
                         </div>
 
                         <div className="
-                            h-20 w-20
+                            h-12 w-12
                             rounded-full
                             bg-emerald-100
                             flex items-center
                             justify-center
                         ">
                             <BarChart3
-                                size={35}
+                                size={22}
                                 className="text-emerald-700"
                             />
                         </div>
@@ -244,17 +245,17 @@ export default function Nilai() {
                     {/* SKS */}
 
                     <div className="
-                        rounded-3xl
+                        rounded-2xl
                         bg-white
                         border
-                        p-8
+                        p-6
                         flex
                         justify-between
                     ">
                         <div>
 
                             <p className="
-                                text-lg
+                                text-xs
                                 uppercase
                                 tracking-widest
                                 text-slate-500
@@ -263,13 +264,13 @@ export default function Nilai() {
                             </p>
 
                             <h2 className="
-                                mt-4
-                                text-5xl
+                                mt-2
+                                text-2xl
                                 font-bold
                             ">
                                 124
                                 <span className="
-                                    text-3xl
+                                    text-lg
                                     text-slate-400
                                 ">
                                     /144
@@ -277,8 +278,8 @@ export default function Nilai() {
                             </h2>
 
                             <p className="
-                                mt-4
-                                text-lg
+                                mt-2
+                                text-sm
                                 text-slate-500
                             ">
                                 20 SKS remaining for graduation
@@ -287,14 +288,14 @@ export default function Nilai() {
                         </div>
 
                         <div className="
-                            h-20 w-20
+                            h-12 w-12
                             rounded-full
                             bg-slate-100
                             flex items-center
                             justify-center
                         ">
                             <GraduationCap
-                                size={35}
+                                size={22}
                                 className="text-emerald-700"
                             />
                         </div>
@@ -306,8 +307,8 @@ export default function Nilai() {
                 {/* TABLE */}
 
                 <div className="
-                    mt-10
-                    rounded-3xl
+                    mt-6
+                    rounded-2xl
                     bg-white
                     border
                     overflow-hidden
@@ -316,21 +317,22 @@ export default function Nilai() {
                     <div className="
                         flex justify-between
                         items-center
-                        p-8
+                        p-6
                     ">
                         <h2 className="
-                            text-3xl
+                            text-lg
                             font-bold
                         ">
                             Detail Mata Kuliah
                         </h2>
 
-                        <div className="flex gap-3">
+                        <div className="flex gap-2">
 
                             <span className="
                                 rounded-full
                                 bg-emerald-100
-                                px-4 py-2
+                                px-3 py-1.5
+                                text-xs
                                 text-emerald-700
                             ">
                                 Passed: 6
@@ -339,7 +341,8 @@ export default function Nilai() {
                             <span className="
                                 rounded-full
                                 bg-slate-100
-                                px-4 py-2
+                                px-3 py-1.5
+                                text-xs
                             ">
                                 Total: 7
                             </span>
@@ -347,14 +350,15 @@ export default function Nilai() {
                         </div>
                     </div>
 
-                    <table className="w-full">
+                    <table className="w-full text-sm">
 
                         <thead className="
                             bg-slate-900
                             text-white
+                            text-xs
                         ">
                             <tr>
-                                <th className="py-4">MATA KULIAH</th>
+                                <th className="py-3">MATA KULIAH</th>
                                 <th>TUGAS</th>
                                 <th>UTS</th>
                                 <th>UAS</th>
@@ -374,26 +378,27 @@ export default function Nilai() {
                                             hover:bg-slate-50
                                         "
                                     >
-                                        <td className="p-6">
+                                        <td className="p-4">
 
                                             <div className="
-                                                flex gap-4
+                                                flex gap-3
                                             ">
                                                 <div className="
-                                                    w-2
+                                                    w-1.5
                                                     rounded-full
                                                     bg-emerald-700
                                                 "/>
 
                                                 <div>
                                                     <h3 className="
-                                                        text-xl
+                                                        text-sm
                                                         font-bold
                                                     ">
                                                         {item.matkul}
                                                     </h3>
 
                                                     <p className="
+                                                        text-xs
                                                         text-slate-500
                                                     ">
                                                         {item.kode} • {item.sks} SKS
@@ -409,9 +414,10 @@ export default function Nilai() {
 
                                         <td className="text-center">
                                             <span className="
-                                                rounded-xl
+                                                rounded-lg
                                                 bg-emerald-100
-                                                px-4 py-2
+                                                px-3 py-1
+                                                text-xs
                                                 font-bold
                                                 text-emerald-700
                                             ">
@@ -420,8 +426,9 @@ export default function Nilai() {
                                         </td>
 
                                         <td className="
-                                            max-w-sm
-                                            px-6 py-5
+                                            max-w-xs
+                                            px-4 py-3
+                                            text-xs
                                             text-slate-600
                                         ">
                                             "{item.feedback}"

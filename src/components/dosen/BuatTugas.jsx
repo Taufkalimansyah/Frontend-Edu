@@ -1,9 +1,8 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import Sidebar from "../../components/dosen/Sidebar";
 import TugasForm from "../../components/dosen/TugasForm";
 import TugasList from "../../components/dosen/TugasList";
-import Toast from "../../components/dosen/Toast";
+import Toast from "../../components/Toast";
 import { Plus, FileText, Calendar, Clock, ClipboardList } from "lucide-react";
 
 // Data dummy
@@ -44,18 +43,15 @@ const dummyTugas = [
 ];
 
 export default function BuatTugas() {
-    const navigate = useNavigate();
     const [tugasList, setTugasList] = useState(dummyTugas);
     const [showForm, setShowForm] = useState(false);
     const [editingTugas, setEditingTugas] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [toast, setToast] = useState(null);
 
-    // Fungsi untuk menambah tugas baru
     const handleAddTugas = (data) => {
         setIsLoading(true);
         
-        // Simulasi loading
         setTimeout(() => {
             const newTugas = {
                 id: Date.now(),
@@ -79,7 +75,6 @@ export default function BuatTugas() {
         }, 1500);
     };
 
-    // Fungsi untuk update tugas
     const handleUpdateTugas = (data) => {
         setIsLoading(true);
         
@@ -104,7 +99,6 @@ export default function BuatTugas() {
         }, 1500);
     };
 
-    // Fungsi untuk hapus tugas
     const handleDeleteTugas = (id) => {
         if (window.confirm("Yakin ingin menghapus tugas ini?")) {
             setIsLoading(true);
@@ -124,7 +118,6 @@ export default function BuatTugas() {
         }
     };
 
-    // Fungsi untuk edit tugas
     const handleEditTugas = (tugas) => {
         setEditingTugas(tugas);
         setShowForm(true);
@@ -135,7 +128,6 @@ export default function BuatTugas() {
             <Sidebar />
             
             <main className="ml-72 flex-1 p-8">
-                {/* Header */}
                 <div className="flex items-center justify-between mb-8">
                     <div>
                         <div className="flex items-center gap-3">
@@ -166,7 +158,6 @@ export default function BuatTugas() {
                     </button>
                 </div>
 
-                {/* Stats Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-300">
                         <div className="flex items-center justify-between">
@@ -212,7 +203,6 @@ export default function BuatTugas() {
                     </div>
                 </div>
 
-                {/* Form Modal */}
                 {showForm && (
                     <TugasForm
                         open={showForm}
@@ -226,14 +216,12 @@ export default function BuatTugas() {
                     />
                 )}
 
-                {/* Tugas List */}
                 <TugasList
                     tugasList={tugasList}
                     onEdit={handleEditTugas}
                     onDelete={handleDeleteTugas}
                 />
 
-                {/* Toast Notification */}
                 {toast && (
                     <Toast
                         message={toast.message}

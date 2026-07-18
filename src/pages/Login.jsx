@@ -12,12 +12,12 @@ export default function Login() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const handleLogin = async ({ email, password }) => {
+  const handleLogin = async ({ email, role, password }) => {
     setLoading(true);
     setError("");
 
     try {
-      const res = await login(email, password);
+      const res = await login(email, role, password);
 
       const { token, user } = res.data;
 

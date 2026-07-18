@@ -3,12 +3,13 @@ import { Eye, EyeOff, Loader2, Lock, Mail } from "lucide-react";
 
 export default function LoginForm({ onSubmit, loading, error }) {
   const [email, setEmail] = useState("");
+  const [role, setRole] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit({ email, password });
+    onSubmit({ email, role, password });
   };
 
   return (
@@ -31,6 +32,24 @@ export default function LoginForm({ onSubmit, loading, error }) {
             />
           </div>
         </label>
+
+        <label className="block">
+          <span className="mb-2 block text-sm font-medium text-slate-300">
+              Role
+          </span>
+
+          <select
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              required
+              className="w-full rounded-2xl border border-slate-700 bg-slate-950/70 py-3 px-4 text-sm text-white outline-none focus:border-emerald-500"
+          >
+              <option value="">Pilih Role</option>
+              <option value="admin">Admin</option>
+              <option value="dosen">Dosen</option>
+              <option value="mahasiswa">Mahasiswa</option>
+          </select>
+      </label>
 
         <label className="block">
           <span className="mb-2 block text-sm font-medium text-slate-300">Password</span>

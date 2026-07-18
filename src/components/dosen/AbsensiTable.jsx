@@ -1,55 +1,64 @@
-import MahasiswaTableRow from "./MahasiswaTableRow";
-import { Users, Loader2 } from "lucide-react";
+import { Users, BookOpen, Calendar, Clock, FileText } from "lucide-react";
+import AbsensiRow from "./AbsensiRow";
 
-export default function MahasiswaTable({ data, loading, onEdit, onDelete }) {
-    if (loading) {
+export default function AbsensiTable({ data, onEdit, onDelete }) {
+    if (data.length === 0) {
         return (
-            <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-12 text-center">
-                <Loader2 size={48} className="text-emerald-500 animate-spin mx-auto mb-4" />
-                <p className="text-slate-500">Memuat data mahasiswa...</p>
-            </div>
-        );
-    }
-
-    if (!data.length) {
-        return (
-            <div className="rounded-2xl bg-white border border-slate-200 shadow-sm p-12 text-center hover:shadow-md transition-shadow duration-300">
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-12 text-center">
                 <div className="w-20 h-20 bg-emerald-50 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                    <Users size={40} className="text-emerald-300" />
+                    <CalendarDays size={40} className="text-emerald-300" />
                 </div>
                 <h3 className="text-lg font-semibold text-slate-700 mb-2">
-                    Belum Ada Data Mahasiswa
+                    Tidak Ada Data Absensi
                 </h3>
                 <p className="text-slate-500">
-                    Mulai dengan menambahkan mahasiswa baru melalui tombol di atas.
+                    Belum ada data absensi yang ditemukan
                 </p>
             </div>
         );
     }
 
     return (
-        <div className="rounded-2xl bg-white border border-slate-200 shadow-sm overflow-hidden hover:shadow-md transition-shadow duration-300">
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
             <div className="overflow-x-auto">
                 <table className="w-full">
                     <thead>
                         <tr className="bg-gradient-to-r from-emerald-50 to-emerald-100/50">
                             <th className="px-6 py-4 text-left text-xs font-semibold text-emerald-700 uppercase tracking-wider">
-                                Nama
+                                <div className="flex items-center gap-2">
+                                    <Users size={14} />
+                                    Mahasiswa
+                                </div>
                             </th>
                             <th className="px-6 py-4 text-left text-xs font-semibold text-emerald-700 uppercase tracking-wider">
-                                Email
+                                <div className="flex items-center gap-2">
+                                    <BookOpen size={14} />
+                                    Mata Kuliah
+                                </div>
                             </th>
                             <th className="px-6 py-4 text-left text-xs font-semibold text-emerald-700 uppercase tracking-wider">
-                                Role
+                                <div className="flex items-center gap-2">
+                                    <Calendar size={14} />
+                                    Pertemuan
+                                </div>
                             </th>
                             <th className="px-6 py-4 text-left text-xs font-semibold text-emerald-700 uppercase tracking-wider">
-                                NIM
+                                <div className="flex items-center gap-2">
+                                    <Calendar size={14} />
+                                    Tanggal
+                                </div>
                             </th>
                             <th className="px-6 py-4 text-left text-xs font-semibold text-emerald-700 uppercase tracking-wider">
-                                Jurusan
+                                <div className="flex items-center gap-2">
+                                    <Clock size={14} />
+                                    Waktu
+                                </div>
                             </th>
                             <th className="px-6 py-4 text-left text-xs font-semibold text-emerald-700 uppercase tracking-wider">
                                 Status
+                            </th>
+                            <th className="px-6 py-4 text-left text-xs font-semibold text-emerald-700 uppercase tracking-wider">
+                                Keterangan
                             </th>
                             <th className="px-6 py-4 text-center text-xs font-semibold text-emerald-700 uppercase tracking-wider">
                                 Action
@@ -57,10 +66,10 @@ export default function MahasiswaTable({ data, loading, onEdit, onDelete }) {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-100">
-                        {data.map((mhs) => (
-                            <MahasiswaTableRow
-                                key={mhs.id}
-                                mhs={mhs}
+                        {data.map((item) => (
+                            <AbsensiRow
+                                key={item.id}
+                                item={item}
                                 onEdit={onEdit}
                                 onDelete={onDelete}
                             />
