@@ -354,7 +354,7 @@ export default function KelasSaya() {
 
                             <div
                             className="
-                                -mt-12
+                                -mt-0.3
                                 mb-4
                                 w-14
                                 h-14
