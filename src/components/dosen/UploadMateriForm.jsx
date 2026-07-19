@@ -6,42 +6,32 @@ export default function UploadMateriForm({
     initialData,
     onClose,
     onSubmit,
-    isLoading
+    isLoading,
+    kelasList = []
 }) {
     const [form, setForm] = useState({
+        kelasId: "",
         judul: "",
         deskripsi: "",
-        mataKuliah: "",
         file: null,
         fileName: ""
     });
     const [error, setError] = useState(null);
 
-    const mataKuliahList = [
-        "Algoritma dan Pemrograman",
-        "Basis Data",
-        "Desain Antarmuka Pengguna",
-        "Jaringan Komputer",
-        "Kecerdasan Buatan",
-        "Rekayasa Perangkat Lunak",
-        "Sistem Operasi",
-        "Pemrograman Web"
-    ];
-
     useEffect(() => {
         if (initialData) {
             setForm({
+                kelasId: initialData.kelas_id || "",
                 judul: initialData.judul || "",
                 deskripsi: initialData.deskripsi || "",
-                mataKuliah: initialData.mataKuliah || "",
                 file: null,
-                fileName: initialData.file || ""
+                fileName: initialData.file_name || ""
             });
         } else {
             setForm({
+                kelasId: "",
                 judul: "",
                 deskripsi: "",
-                mataKuliah: "",
                 file: null,
                 fileName: ""
             });
@@ -70,6 +60,11 @@ export default function UploadMateriForm({
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
+        if (!form.kelasId) {
+            setError("Kelas wajib dipilih");
+            return;
+        }
         
         if (!form.judul.trim()) {
             setError("Judul materi wajib diisi");
@@ -79,10 +74,7 @@ export default function UploadMateriForm({
             setError("Deskripsi materi wajib diisi");
             return;
         }
-        if (!form.mataKuliah) {
-            setError("Mata kuliah wajib dipilih");
-            return;
-        }
+
         if (!initialData && !form.file) {
             setError("File materi wajib diupload");
             return;
@@ -117,6 +109,33 @@ export default function UploadMateriForm({
                     </button>
                 </div>
 
+                <div>
+    <label className="block text-sm font-medium text-slate-700 mb-2">
+        <div className="flex items-center gap-2">
+            <BookOpen size={16} className="text-emerald-500" />
+            Kelas
+        </div>
+    </label>
+
+    <select
+        name="kelasId"
+        value={form.kelasId}
+        onChange={handleChange}
+        className="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 outline-none"
+    >
+        <option value="">Pilih Kelas</option>
+
+        {kelasList.map(kelas => (
+            <option
+                key={kelas.id}
+                value={kelas.id}
+            >
+                {kelas.nama}
+            </option>
+        ))}
+    </select>
+</div>
+
                 <form onSubmit={handleSubmit} className="space-y-5">
                     {/* Judul */}
                     <div>
@@ -128,6 +147,7 @@ export default function UploadMateriForm({
                         </label>
                         <input
                             name="judul"
+                            required
                             value={form.judul}
                             onChange={handleChange}
                             placeholder="Masukkan judul materi"
@@ -145,33 +165,13 @@ export default function UploadMateriForm({
                         </label>
                         <textarea
                             name="deskripsi"
+                            required
                             value={form.deskripsi}
                             onChange={handleChange}
                             rows={4}
                             placeholder="Jelaskan materi yang akan diupload"
                             className="w-full border-2 border-slate-200 rounded-xl px-4 py-3 transition-all duration-300 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 outline-none resize-none"
                         />
-                    </div>
-
-                    {/* Mata Kuliah */}
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">
-                            <div className="flex items-center gap-2">
-                                <BookOpen size={16} className="text-emerald-500" />
-                                Mata Kuliah
-                            </div>
-                        </label>
-                        <select
-                            name="mataKuliah"
-                            value={form.mataKuliah}
-                            onChange={handleChange}
-                            className="w-full border-2 border-slate-200 rounded-xl px-4 py-3 transition-all duration-300 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 outline-none bg-white"
-                        >
-                            <option value="">Pilih Mata Kuliah</option>
-                            {mataKuliahList.map((mk, index) => (
-                                <option key={index} value={mk}>{mk}</option>
-                            ))}
-                        </select>
                     </div>
 
                     {/* File Upload */}
@@ -185,6 +185,7 @@ export default function UploadMateriForm({
                         <div className="relative">
                             <input
                                 type="file"
+                                accept=".pdf,.ppt,.pptx,.doc,.docx,video/*"
                                 onChange={handleFileChange}
                                 className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                             />
@@ -197,7 +198,7 @@ export default function UploadMateriForm({
                                     {form.fileName || 'Klik atau drag file untuk upload'}
                                 </p>
                                 <p className="text-xs text-slate-400 mt-1">
-                                    {form.fileName ? `File: ${form.fileName}` : 'PDF, PPT, DOC (Max 10MB)'}
+                                    {form.fileName ? `File: ${form.fileName}` : 'PDF, PPT, DOC DOCX, Video (Maks. 50 MB)'}
                                 </p>
                             </div>
                         </div>
