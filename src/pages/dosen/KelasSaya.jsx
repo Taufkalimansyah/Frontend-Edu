@@ -64,6 +64,10 @@ export default function KelasSaya() {
     setShowModal(true);
 };
 
+const handleCardClick = (id) => {
+    navigate(`/dosen/kelas/${id}`);
+};
+
     const handleUpdateClass = async (data) => {
 
     setIsSubmitting(true);
@@ -180,6 +184,7 @@ const handleDeleteClass = async (kelas)=>{
                 ) : (
                     <KelasGrid 
                         classes={filteredClasses}
+                        onCardClick={handleCardClick}
                          onEditClick={handleEditClick}
                          onDeleteClick={handleDeleteClass} 
                     />
