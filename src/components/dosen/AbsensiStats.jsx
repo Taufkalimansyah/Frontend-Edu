@@ -24,8 +24,8 @@ export default function AbsensiStats({ stats }) {
             iconColor: "text-yellow-600"
         },
         {
-            label: "Alpa",
-            value: stats.alpa,
+            label: "Alpha",
+            value: stats.alpha,
             icon: XCircle,
             bgColor: "bg-red-100",
             iconColor: "text-red-600"

@@ -49,6 +49,9 @@ export const getGrades = () => api.get("/grades");
 
 // Absensi
 export const getAttendance = (classId) => api.get(`/classes/${classId}/attendance`);
+export const createAttendance = (classId, payload) => api.post(`/classes/${classId}/attendance`, payload);
+export const updateAttendance = (id, payload) => api.put(`/attendance/${id}`, payload);
+export const deleteAttendance = (id) => api.delete(`/attendance/${id}`);
 
 // Pengumuman
 export const getAnnouncements = () => api.get("/announcements");
@@ -58,6 +61,7 @@ export const deleteAnnouncement = (id) =>api.delete(`/announcements/${id}`);
 
 // User (admin)
 export const getUsers = (q = "") => api.get(`/users?q=${q}`);
+export const getUsersByRole = (role) => api.get(`/users?role=${role}`);
 export const createUser = (payload) => api.post("/users", payload);
 export const deleteUser = (id) => api.delete(`/users/${id}`);
 

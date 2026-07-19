@@ -13,13 +13,13 @@ export default function AbsensiRow({ item, onEdit, onDelete }) {
                 icon: <Clock size={14} className="text-yellow-500" />,
                 label: "Izin"
             },
-            alpa: {
+            alpha: {
                 color: "bg-red-100 text-red-700",
                 icon: <XCircle size={14} className="text-red-500" />,
-                label: "Alpa"
+                label: "Alpha"
             }
         };
-        return configs[status] || configs.alpa;
+        return configs[status] || configs.alpha;
     };
 
     const statusConfig = getStatusConfig(item.status);
@@ -36,26 +36,13 @@ export default function AbsensiRow({ item, onEdit, onDelete }) {
                             {item.mahasiswa.name}
                         </p>
                         <p className="text-xs text-slate-500">
-                            {item.mahasiswa.nim} • {item.mahasiswa.kelas}
+                            {item.mahasiswa.nim}
                         </p>
                     </div>
                 </div>
             </td>
-            
-            <td className="px-6 py-4">
-                <span className="text-sm text-slate-700">{item.mataKuliah}</span>
-            </td>
-            
-            <td className="px-6 py-4">
-                <span className="text-sm text-slate-700">{item.pertemuan}</span>
-            </td>
-            
             <td className="px-6 py-4">
                 <span className="text-sm text-slate-700">{item.tanggal}</span>
-            </td>
-            
-            <td className="px-6 py-4">
-                <span className="text-sm text-slate-700">{item.waktu || '-'}</span>
             </td>
             
             <td className="px-6 py-4">
@@ -67,12 +54,7 @@ export default function AbsensiRow({ item, onEdit, onDelete }) {
                     {statusConfig.label}
                 </span>
             </td>
-            
-            <td className="px-6 py-4">
-                <p className="text-sm text-slate-600 max-w-xs truncate">
-                    {item.keterangan || '-'}
-                </p>
-            </td>
+
             
             <td className="px-6 py-4">
                 <div className="flex justify-center gap-2">

@@ -34,7 +34,7 @@ export default function AbsensiHeader({
                     <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                     <input
                         type="text"
-                        placeholder="Cari mahasiswa atau mata kuliah..."
+                        placeholder="Cari mahasiswa..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="pl-10 pr-4 py-2.5 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 outline-none w-full sm:w-56 transition-all duration-300"
@@ -51,7 +51,7 @@ export default function AbsensiHeader({
                         <option value="semua">Semua Status</option>
                         <option value="hadir">Hadir</option>
                         <option value="izin">Izin</option>
-                        <option value="alpa">Alpa</option>
+                        <option value="alpha">Alpha</option>
                     </select>
                 </div>
 
@@ -62,11 +62,15 @@ export default function AbsensiHeader({
                         onChange={(e) => setFilterKelas(e.target.value)}
                         className="pl-10 pr-8 py-2.5 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 outline-none bg-white appearance-none w-full sm:w-auto"
                     >
-                        {kelasList.map(kelas => (
-                            <option key={kelas} value={kelas}>
-                                {kelas === "semua" ? "Semua Kelas" : kelas}
-                            </option>
-                        ))}
+                        {kelasList.length === 0 ? (
+                            <option value="">Tidak ada kelas</option>
+                        ) : (
+                            kelasList.map(kelas => (
+                                <option key={kelas.id} value={kelas.id}>
+                                    {kelas.nama}
+                                </option>
+                            ))
+                        )}
                     </select>
                 </div>
 
