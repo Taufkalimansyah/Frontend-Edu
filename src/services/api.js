@@ -24,6 +24,8 @@ export const me = () => api.get("/me");
 
 // Kelas
 export const getClasses = () => api.get("/classes");
+export const getAvailableClasses = () => api.get("/classes/available");
+export const enrollClass = (classId) => api.post(`/classes/${classId}/enroll`);
 export const getClass = (id) => api.get(`/classes/${id}`);
 export const createClass = (payload) => api.post("/classes", payload);
 export const updateClass = (id, payload) =>api.put(`/classes/${id}`, payload);
