@@ -1,46 +1,36 @@
 import { useEffect, useState } from "react";
-import { X, FileText, Calendar, BookOpen, Clock, AlertCircle } from "lucide-react";
+import { X, FileText, Calendar, BookOpen, AlertCircle } from "lucide-react";
 
-export default function TugasForm({ 
-    open, 
-    initialData, 
-    onClose, 
+export default function TugasForm({
+    open,
+    initialData,
+    kelasList = [],
+    onClose,
     onSubmit,
-    isLoading 
+    isLoading
 }) {
     const [form, setForm] = useState({
+        kelasId: "",
         judul: "",
-        deskripsi: "",
-        deadline: "",
-        mataKuliah: ""
+        instruksi: "",
+        deadline: ""
     });
     const [error, setError] = useState(null);
-
-    const mataKuliahList = [
-        "Algoritma dan Pemrograman",
-        "Basis Data",
-        "Desain Antarmuka Pengguna",
-        "Jaringan Komputer",
-        "Kecerdasan Buatan",
-        "Rekayasa Perangkat Lunak",
-        "Sistem Operasi",
-        "Pemrograman Web"
-    ];
 
     useEffect(() => {
         if (initialData) {
             setForm({
+                kelasId: initialData.kelas_id || "",
                 judul: initialData.judul || "",
-                deskripsi: initialData.deskripsi || "",
-                deadline: initialData.deadline || "",
-                mataKuliah: initialData.mataKuliah || ""
+                instruksi: initialData.instruksi || "",
+                deadline: initialData.deadline ? initialData.deadline.slice(0, 10) : ""
             });
         } else {
             setForm({
+                kelasId: "",
                 judul: "",
-                deskripsi: "",
-                deadline: "",
-                mataKuliah: ""
+                instruksi: "",
+                deadline: ""
             });
         }
         setError(null);
@@ -56,24 +46,20 @@ export default function TugasForm({
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        
-        if (!form.judul.trim()) {
-            setError("Judul tugas wajib diisi");
+
+        if (!initialData && !form.kelasId) {
+            setError("Kelas wajib dipilih");
             return;
         }
-        if (!form.deskripsi.trim()) {
-            setError("Deskripsi tugas wajib diisi");
+        if (!form.judul.trim()) {
+            setError("Judul tugas wajib diisi");
             return;
         }
         if (!form.deadline) {
             setError("Deadline tugas wajib diisi");
             return;
         }
-        if (!form.mataKuliah) {
-            setError("Mata kuliah wajib dipilih");
-            return;
-        }
-        
+
         onSubmit(form);
     };
 
@@ -103,6 +89,30 @@ export default function TugasForm({
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-5">
+                    {!initialData && (
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                                <div className="flex items-center gap-2">
+                                    <BookOpen size={16} className="text-emerald-500" />
+                                    Kelas
+                                </div>
+                            </label>
+                            <select
+                                name="kelasId"
+                                value={form.kelasId}
+                                onChange={handleChange}
+                                className="w-full border-2 border-slate-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 outline-none bg-white"
+                            >
+                                <option value="">Pilih Kelas</option>
+                                {kelasList.map(kelas => (
+                                    <option key={kelas.id} value={kelas.id}>
+                                        {kelas.nama}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+                    )}
+
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-2">
                             <div className="flex items-center gap-2">
@@ -123,12 +133,12 @@ export default function TugasForm({
                         <label className="block text-sm font-medium text-slate-700 mb-2">
                             <div className="flex items-center gap-2">
                                 <FileText size={16} className="text-emerald-500" />
-                                Deskripsi Tugas
+                                Instruksi Tugas
                             </div>
                         </label>
                         <textarea
-                            name="deskripsi"
-                            value={form.deskripsi}
+                            name="instruksi"
+                            value={form.instruksi}
                             onChange={handleChange}
                             rows={4}
                             placeholder="Jelaskan detail tugas yang harus dikerjakan mahasiswa"
@@ -136,42 +146,20 @@ export default function TugasForm({
                         />
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">
-                                <div className="flex items-center gap-2">
-                                    <BookOpen size={16} className="text-emerald-500" />
-                                    Mata Kuliah
-                                </div>
-                            </label>
-                            <select
-                                name="mataKuliah"
-                                value={form.mataKuliah}
-                                onChange={handleChange}
-                                className="w-full border-2 border-slate-200 rounded-xl px-4 py-3 transition-all duration-300 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 outline-none bg-white"
-                            >
-                                <option value="">Pilih Mata Kuliah</option>
-                                {mataKuliahList.map((mk, index) => (
-                                    <option key={index} value={mk}>{mk}</option>
-                                ))}
-                            </select>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">
-                                <div className="flex items-center gap-2">
-                                    <Calendar size={16} className="text-emerald-500" />
-                                    Deadline
-                                </div>
-                            </label>
-                            <input
-                                type="date"
-                                name="deadline"
-                                value={form.deadline}
-                                onChange={handleChange}
-                                className="w-full border-2 border-slate-200 rounded-xl px-4 py-3 transition-all duration-300 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 outline-none"
-                            />
-                        </div>
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                            <div className="flex items-center gap-2">
+                                <Calendar size={16} className="text-emerald-500" />
+                                Deadline
+                            </div>
+                        </label>
+                        <input
+                            type="date"
+                            name="deadline"
+                            value={form.deadline}
+                            onChange={handleChange}
+                            className="w-full border-2 border-slate-200 rounded-xl px-4 py-3 transition-all duration-300 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 outline-none"
+                        />
                     </div>
 
                     {error && (
@@ -193,19 +181,9 @@ export default function TugasForm({
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-medium shadow-lg shadow-emerald-200 hover:shadow-xl hover:shadow-emerald-300 hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0 flex items-center gap-2"
+                            className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-medium shadow-lg shadow-emerald-200 hover:shadow-xl hover:shadow-emerald-300 hover:-translate-y-0.5 transition-all duration-300 disabled:opacity-50 flex items-center gap-2"
                         >
-                            {isLoading ? (
-                                <>
-                                    <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                    </svg>
-                                    Menyimpan...
-                                </>
-                            ) : (
-                                initialData ? "Update Tugas" : "Buat Tugas"
-                            )}
+                            {isLoading ? "Menyimpan..." : (initialData ? "Update Tugas" : "Buat Tugas")}
                         </button>
                     </div>
                 </form>

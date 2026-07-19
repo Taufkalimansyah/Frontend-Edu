@@ -1,6 +1,6 @@
-import { FileText, Eye, Download, Calendar, BookOpen, Pencil, Trash2, FileUp } from "lucide-react";
+import { FileText, Download, Calendar, BookOpen, Pencil, Trash2, FileUp } from "lucide-react";
 
-export default function MateriList({ data, onEdit, onDelete }) {
+export default function MateriList({ data, onEdit, onDelete, onDownload }) {
     if (data.length === 0) {
         return (
             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-12 text-center">
@@ -37,18 +37,12 @@ export default function MateriList({ data, onEdit, onDelete }) {
                                     </h3>
                                     <p className="text-xs text-slate-500 flex items-center gap-2 mt-0.5">
                                         <BookOpen size={12} />
-                                        {item.mataKuliah}
+                                        {item.kelas?.nama || "-"}
                                     </p>
                                 </div>
                             </div>
-                            <span className={`
-                                text-xs px-2.5 py-1 rounded-full font-medium
-                                ${item.status === 'published' 
-                                    ? 'bg-emerald-100 text-emerald-700' 
-                                    : 'bg-yellow-100 text-yellow-700'
-                                }
-                            `}>
-                                {item.status === 'published' ? 'Published' : 'Draft'}
+                            <span className="text-xs px-2.5 py-1 rounded-full font-medium bg-emerald-100 text-emerald-700 capitalize">
+                                {item.tipe}
                             </span>
                         </div>
 
@@ -61,19 +55,11 @@ export default function MateriList({ data, onEdit, onDelete }) {
                         <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500 mb-4">
                             <span className="flex items-center gap-1">
                                 <FileText size={13} />
-                                {item.file}
+                                {item.file_name}
                             </span>
                             <span className="flex items-center gap-1">
                                 <Calendar size={13} />
-                                {item.tanggalUpload}
-                            </span>
-                            <span className="flex items-center gap-1">
-                                <Eye size={13} />
-                                {item.views} views
-                            </span>
-                            <span className="flex items-center gap-1">
-                                <Download size={13} />
-                                {item.downloads} downloads
+                                {item.created_at ? new Date(item.created_at).toLocaleDateString("id-ID") : "-"}
                             </span>
                         </div>
 
@@ -81,7 +67,7 @@ export default function MateriList({ data, onEdit, onDelete }) {
                         <div className="flex items-center justify-between pt-4 border-t border-slate-100">
                             <div className="flex items-center gap-2">
                                 <button
-                                    onClick={() => window.open(`/${item.file}`, '_blank')}
+                                    onClick={() => onDownload(item)}
                                     className="px-3 py-1.5 rounded-lg bg-emerald-500 text-white text-xs font-medium shadow-md shadow-emerald-200 hover:shadow-lg hover:shadow-emerald-300 hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-1.5"
                                 >
                                     <Download size={13} />

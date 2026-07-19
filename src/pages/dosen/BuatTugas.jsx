@@ -1,130 +1,104 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/dosen/Sidebar";
 import TugasForm from "../../components/dosen/TugasForm";
 import TugasList from "../../components/dosen/TugasList";
 import Toast from "../../components/dosen/Toast";
-import { Plus, FileText, Calendar, Clock, ClipboardList } from "lucide-react";
-
-// Data dummy
-const dummyTugas = [
-    {
-        id: 1,
-        judul: "Tugas 1: Analisis Algoritma",
-        deskripsi: "Buatlah analisis kompleksitas waktu dari algoritma sorting yang telah dipelajari",
-        deadline: "2026-07-25",
-        mataKuliah: "Algoritma dan Pemrograman",
-        status: "aktif",
-        totalMahasiswa: 45,
-        sudahMengumpulkan: 28,
-        createdAt: "2026-07-18T10:00:00"
-    },
-    {
-        id: 2,
-        judul: "Tugas 2: Implementasi Database",
-        deskripsi: "Rancang dan implementasikan database sederhana menggunakan MySQL",
-        deadline: "2026-07-30",
-        mataKuliah: "Basis Data",
-        status: "aktif",
-        totalMahasiswa: 38,
-        sudahMengumpulkan: 15,
-        createdAt: "2026-07-19T14:30:00"
-    },
-    {
-        id: 3,
-        judul: "Tugas 3: Desain UI/UX",
-        deskripsi: "Buatlah prototype desain aplikasi mobile dengan Figma",
-        deadline: "2026-08-05",
-        mataKuliah: "Desain Antarmuka Pengguna",
-        status: "nonaktif",
-        totalMahasiswa: 42,
-        sudahMengumpulkan: 40,
-        createdAt: "2026-07-15T09:00:00"
-    }
-];
+import { getTugasList, createTugas, updateTugas, deleteTugas, getClasses } from "../../services/api";
+import { Plus, FileText, Clock, ClipboardList } from "lucide-react";
 
 export default function BuatTugas() {
-    const navigate = useNavigate();
-    const [tugasList, setTugasList] = useState(dummyTugas);
+    const [tugasList, setTugasList] = useState([]);
+    const [classes, setClasses] = useState([]);
     const [showForm, setShowForm] = useState(false);
     const [editingTugas, setEditingTugas] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
     const [toast, setToast] = useState(null);
 
-    // Fungsi untuk menambah tugas baru
-    const handleAddTugas = (data) => {
-        setIsLoading(true);
-        
-        // Simulasi loading
-        setTimeout(() => {
-            const newTugas = {
-                id: Date.now(),
-                ...data,
-                status: "aktif",
-                totalMahasiswa: Math.floor(Math.random() * 30) + 20,
-                sudahMengumpulkan: 0,
-                createdAt: new Date().toISOString()
-            };
-            
-            setTugasList([newTugas, ...tugasList]);
-            setShowForm(false);
-            setIsLoading(false);
-            
-            setToast({
-                message: "✅ Tugas berhasil dibuat!",
-                type: "success"
-            });
-            
-            setTimeout(() => setToast(null), 3000);
-        }, 1500);
-    };
+    useEffect(() => {
+        fetchTugas();
+        fetchClasses();
+    }, []);
 
-    // Fungsi untuk update tugas
-    const handleUpdateTugas = (data) => {
-        setIsLoading(true);
-        
-        setTimeout(() => {
-            const updatedList = tugasList.map(tugas => 
-                tugas.id === editingTugas.id 
-                    ? { ...tugas, ...data }
-                    : tugas
-            );
-            
-            setTugasList(updatedList);
-            setEditingTugas(null);
-            setShowForm(false);
-            setIsLoading(false);
-            
-            setToast({
-                message: "✅ Tugas berhasil diperbarui!",
-                type: "success"
-            });
-            
-            setTimeout(() => setToast(null), 3000);
-        }, 1500);
-    };
-
-    // Fungsi untuk hapus tugas
-    const handleDeleteTugas = (id) => {
-        if (window.confirm("Yakin ingin menghapus tugas ini?")) {
-            setIsLoading(true);
-            
-            setTimeout(() => {
-                const filteredList = tugasList.filter(tugas => tugas.id !== id);
-                setTugasList(filteredList);
-                setIsLoading(false);
-                
-                setToast({
-                    message: "🗑️ Tugas berhasil dihapus!",
-                    type: "warning"
-                });
-                
-                setTimeout(() => setToast(null), 3000);
-            }, 1000);
+    const fetchTugas = async () => {
+        try {
+            const res = await getTugasList();
+            const list = Array.isArray(res.data) ? res.data : (res.data?.data ?? []);
+            setTugasList(list);
+        } catch (err) {
+            console.error(err);
+            showToast("❌ Gagal memuat daftar tugas", "error");
         }
     };
 
-    // Fungsi untuk edit tugas
+    const fetchClasses = async () => {
+        try {
+            const res = await getClasses();
+            const list = Array.isArray(res.data) ? res.data : (res.data?.data ?? []);
+            setClasses(list);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
+    const showToast = (message, type) => {
+        setToast({ message, type });
+        setTimeout(() => setToast(null), 3000);
+    };
+
+    const handleAddTugas = async (data) => {
+        try {
+            setIsLoading(true);
+            const payload = {
+                judul: data.judul,
+                instruksi: data.instruksi,
+                deadline: data.deadline,
+            };
+            await createTugas(data.kelasId, payload);
+            await fetchTugas();
+            setShowForm(false);
+            showToast("✅ Tugas berhasil dibuat!", "success");
+        } catch (err) {
+            console.error(err);
+            showToast("❌ Gagal membuat tugas", "error");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleUpdateTugas = async (data) => {
+        try {
+            setIsLoading(true);
+            const payload = {
+                judul: data.judul,
+                instruksi: data.instruksi,
+                deadline: data.deadline,
+            };
+            await updateTugas(editingTugas.id, payload);
+            await fetchTugas();
+            setEditingTugas(null);
+            setShowForm(false);
+            showToast("✅ Tugas berhasil diperbarui!", "success");
+        } catch (err) {
+            console.error(err);
+            showToast("❌ Gagal memperbarui tugas", "error");
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const handleDeleteTugas = async (id) => {
+        if (window.confirm("Yakin ingin menghapus tugas ini?")) {
+            try {
+                await deleteTugas(id);
+                await fetchTugas();
+                showToast("🗑️ Tugas berhasil dihapus!", "warning");
+            } catch (err) {
+                console.error(err);
+                showToast("❌ Gagal menghapus tugas", "error");
+            }
+        }
+    };
+
     const handleEditTugas = (tugas) => {
         setEditingTugas(tugas);
         setShowForm(true);
@@ -133,9 +107,8 @@ export default function BuatTugas() {
     return (
         <div className="flex min-h-screen bg-slate-50">
             <Sidebar />
-            
+
             <main className="ml-72 flex-1 p-8">
-                {/* Header */}
                 <div className="flex items-center justify-between mb-8">
                     <div>
                         <div className="flex items-center gap-3">
@@ -153,7 +126,7 @@ export default function BuatTugas() {
                             </div>
                         </div>
                     </div>
-                    
+
                     <button
                         onClick={() => {
                             setEditingTugas(null);
@@ -166,8 +139,7 @@ export default function BuatTugas() {
                     </button>
                 </div>
 
-                {/* Stats Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                     <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-300">
                         <div className="flex items-center justify-between">
                             <div>
@@ -179,13 +151,13 @@ export default function BuatTugas() {
                             </div>
                         </div>
                     </div>
-                    
+
                     <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-300">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm text-slate-500">Tugas Aktif</p>
+                                <p className="text-sm text-slate-500">Tugas Mendatang</p>
                                 <p className="text-3xl font-bold text-slate-800 mt-1">
-                                    {tugasList.filter(t => t.status === "aktif").length}
+                                    {tugasList.filter(t => new Date(t.deadline) > new Date()).length}
                                 </p>
                             </div>
                             <div className="p-3 bg-blue-100 rounded-xl">
@@ -193,30 +165,13 @@ export default function BuatTugas() {
                             </div>
                         </div>
                     </div>
-                    
-                    <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-md transition-shadow duration-300">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm text-slate-500">Rata-rata Pengumpulan</p>
-                                <p className="text-3xl font-bold text-slate-800 mt-1">
-                                    {tugasList.length > 0 ? Math.round(
-                                        tugasList.reduce((acc, t) => acc + (t.sudahMengumpulkan / t.totalMahasiswa * 100), 0) / 
-                                        tugasList.length
-                                    ) : 0}%
-                                </p>
-                            </div>
-                            <div className="p-3 bg-purple-100 rounded-xl">
-                                <Calendar size={24} className="text-purple-600" />
-                            </div>
-                        </div>
-                    </div>
                 </div>
 
-                {/* Form Modal */}
                 {showForm && (
                     <TugasForm
                         open={showForm}
                         initialData={editingTugas}
+                        kelasList={classes}
                         onClose={() => {
                             setShowForm(false);
                             setEditingTugas(null);
@@ -226,14 +181,12 @@ export default function BuatTugas() {
                     />
                 )}
 
-                {/* Tugas List */}
                 <TugasList
                     tugasList={tugasList}
                     onEdit={handleEditTugas}
                     onDelete={handleDeleteTugas}
                 />
 
-                {/* Toast Notification */}
                 {toast && (
                     <Toast
                         message={toast.message}
