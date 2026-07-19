@@ -30,14 +30,24 @@ export const updateClass = (id, payload) =>api.put(`/classes/${id}`, payload);
 export const deleteClass = (id) =>api.delete(`/classes/${id}`);
 
 // Materi (multipart/form-data karena ada file)
-export const uploadMateri = (classId, formData) =>
-  api.post(`/classes/${classId}/materials`, formData, {
+export const getMaterials = () => api.get("/materials");
+export const getMateri = (materiId) => api.get(`/materials/${materiId}`);
+export const uploadMateri = (classId, formData) =>api.post(`/classes/${classId}/materials`, formData, {headers: { "Content-Type": "multipart/form-data" },});
+export const updateMateri = (materiId, formData) => {
+  formData.append("_method", "PUT");
+  return api.post(`/materials/${materiId}`, formData, {
     headers: { "Content-Type": "multipart/form-data" },
   });
+};
+export const deleteMateri = (materiId) => api.delete(`/materials/${materiId}`);
 export const downloadMateri = (materiId) =>
   api.get(`/materials/${materiId}/download`, { responseType: "blob" });
 
 // Tugas & pengumpulan
+export const getTugasList = () => api.get("/assignments");
+export const getTugasDetail = (id) => api.get(`/assignments/${id}`);
+export const updateTugas = (id, payload) => api.put(`/assignments/${id}`, payload);
+export const deleteTugas = (id) => api.delete(`/assignments/${id}`);
 export const createTugas = (classId, payload) => api.post(`/classes/${classId}/assignments`, payload);
 export const submitTugas = (tugasId, formData) =>
   api.post(`/assignments/${tugasId}/submissions`, formData, {
