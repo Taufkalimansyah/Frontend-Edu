@@ -1,51 +1,32 @@
 import { useEffect, useState } from "react";
-import { X, User, BookOpen, Calendar, Clock, FileText, AlertCircle } from "lucide-react";
+import { X, User, Calendar, Clock, AlertCircle, CalendarDays } from "lucide-react";
 
-export default function AbsensiFormModal({ open, initialData, onClose, onSubmit }) {
+export default function AbsensiFormModal({ open, initialData, mahasiswaList, onClose, onSubmit }) {
     const [form, setForm] = useState({
-        mahasiswaName: "",
-        mahasiswaNim: "",
-        mahasiswaKelas: "",
-        mataKuliah: "",
-        pertemuan: "",
+        mahasiswa_id: "",
         tanggal: "",
-        waktu: "",
-        status: "hadir",
-        keterangan: ""
+        status: "hadir"
     });
     const [error, setError] = useState(null);
 
-    const kelasList = ["IF-3A", "IF-3B", "IF-3C", "IF-4A", "IF-4B"];
     const statusList = [
         { value: "hadir", label: "Hadir" },
         { value: "izin", label: "Izin" },
-        { value: "alpa", label: "Alpa" }
+        { value: "alpha", label: "Alpha" }
     ];
 
     useEffect(() => {
         if (initialData) {
             setForm({
-                mahasiswaName: initialData.mahasiswa.name || "",
-                mahasiswaNim: initialData.mahasiswa.nim || "",
-                mahasiswaKelas: initialData.mahasiswa.kelas || "",
-                mataKuliah: initialData.mataKuliah || "",
-                pertemuan: initialData.pertemuan || "",
+                mahasiswa_id: initialData.mahasiswa_id || initialData.mahasiswa?.id || "",
                 tanggal: initialData.tanggal || "",
-                waktu: initialData.waktu || "",
-                status: initialData.status || "hadir",
-                keterangan: initialData.keterangan || ""
+                status: initialData.status || "hadir"
             });
         } else {
             setForm({
-                mahasiswaName: "",
-                mahasiswaNim: "",
-                mahasiswaKelas: "",
-                mataKuliah: "",
-                pertemuan: "",
+                mahasiswa_id: "",
                 tanggal: "",
-                waktu: "",
-                status: "hadir",
-                keterangan: ""
+                status: "hadir"
             });
         }
         setError(null);
@@ -62,26 +43,12 @@ export default function AbsensiFormModal({ open, initialData, onClose, onSubmit 
     const handleSubmit = (e) => {
         e.preventDefault();
         
-        if (!form.mahasiswaName.trim()) {
-            setError("Nama mahasiswa wajib diisi");
+        // If editing, mahasiswa_id might not be changeable but we still need it
+        if (!initialData && !form.mahasiswa_id) {
+            setError("Mahasiswa wajib dipilih");
             return;
         }
-        if (!form.mahasiswaNim.trim()) {
-            setError("NIM mahasiswa wajib diisi");
-            return;
-        }
-        if (!form.mahasiswaKelas) {
-            setError("Kelas wajib dipilih");
-            return;
-        }
-        if (!form.mataKuliah.trim()) {
-            setError("Mata kuliah wajib diisi");
-            return;
-        }
-        if (!form.pertemuan.trim()) {
-            setError("Pertemuan wajib diisi");
-            return;
-        }
+
         if (!form.tanggal) {
             setError("Tanggal wajib diisi");
             return;
@@ -117,98 +84,40 @@ export default function AbsensiFormModal({ open, initialData, onClose, onSubmit 
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-5">
-                    {/* Mahasiswa */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">
-                                <div className="flex items-center gap-2">
-                                    <User size={16} className="text-emerald-500" />
-                                    Nama Mahasiswa
-                                </div>
-                            </label>
+                    {/* Mahasiswa (Only show if adding, or disabled if editing) */}
+                    <div>
+                        <label className="block text-sm font-medium text-slate-700 mb-2">
+                            <div className="flex items-center gap-2">
+                                <User size={16} className="text-emerald-500" />
+                                Mahasiswa
+                            </div>
+                        </label>
+                        {initialData ? (
                             <input
-                                name="mahasiswaName"
-                                value={form.mahasiswaName}
-                                onChange={handleChange}
-                                placeholder="Masukkan nama mahasiswa"
-                                className="w-full border-2 border-slate-200 rounded-xl px-4 py-3 transition-all duration-300 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 outline-none"
+                                type="text"
+                                value={`${initialData.mahasiswa?.name} (${initialData.mahasiswa?.nim})`}
+                                disabled
+                                className="w-full border-2 border-slate-200 rounded-xl px-4 py-3 bg-slate-50 text-slate-500 outline-none cursor-not-allowed"
                             />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">
-                                <div className="flex items-center gap-2">
-                                    <FileText size={16} className="text-emerald-500" />
-                                    NIM
-                                </div>
-                            </label>
-                            <input
-                                name="mahasiswaNim"
-                                value={form.mahasiswaNim}
-                                onChange={handleChange}
-                                placeholder="Masukkan NIM"
-                                className="w-full border-2 border-slate-200 rounded-xl px-4 py-3 transition-all duration-300 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 outline-none"
-                            />
-                        </div>
-                    </div>
-
-                    {/* Kelas & Mata Kuliah */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">
-                                <div className="flex items-center gap-2">
-                                    <User size={16} className="text-emerald-500" />
-                                    Kelas
-                                </div>
-                            </label>
+                        ) : (
                             <select
-                                name="mahasiswaKelas"
-                                value={form.mahasiswaKelas}
+                                name="mahasiswa_id"
+                                value={form.mahasiswa_id}
                                 onChange={handleChange}
                                 className="w-full border-2 border-slate-200 rounded-xl px-4 py-3 transition-all duration-300 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 outline-none bg-white"
                             >
-                                <option value="">Pilih Kelas</option>
-                                {kelasList.map(kelas => (
-                                    <option key={kelas} value={kelas}>{kelas}</option>
+                                <option value="">Pilih Mahasiswa</option>
+                                {mahasiswaList?.map(mhs => (
+                                    <option key={mhs.id} value={mhs.id}>
+                                        {mhs.nim} - {mhs.name}
+                                    </option>
                                 ))}
                             </select>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">
-                                <div className="flex items-center gap-2">
-                                    <BookOpen size={16} className="text-emerald-500" />
-                                    Mata Kuliah
-                                </div>
-                            </label>
-                            <input
-                                name="mataKuliah"
-                                value={form.mataKuliah}
-                                onChange={handleChange}
-                                placeholder="Masukkan mata kuliah"
-                                className="w-full border-2 border-slate-200 rounded-xl px-4 py-3 transition-all duration-300 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 outline-none"
-                            />
-                        </div>
+                        )}
                     </div>
 
-                    {/* Pertemuan & Tanggal */}
+                    {/* Tanggal & Status */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">
-                                <div className="flex items-center gap-2">
-                                    <Calendar size={16} className="text-emerald-500" />
-                                    Pertemuan
-                                </div>
-                            </label>
-                            <input
-                                name="pertemuan"
-                                value={form.pertemuan}
-                                onChange={handleChange}
-                                placeholder="Contoh: Pertemuan 1"
-                                className="w-full border-2 border-slate-200 rounded-xl px-4 py-3 transition-all duration-300 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 outline-none"
-                            />
-                        </div>
-
                         <div>
                             <label className="block text-sm font-medium text-slate-700 mb-2">
                                 <div className="flex items-center gap-2">
@@ -224,10 +133,7 @@ export default function AbsensiFormModal({ open, initialData, onClose, onSubmit 
                                 className="w-full border-2 border-slate-200 rounded-xl px-4 py-3 transition-all duration-300 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 outline-none"
                             />
                         </div>
-                    </div>
 
-                    {/* Status & Waktu */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-medium text-slate-700 mb-2">
                                 <div className="flex items-center gap-2">
@@ -248,40 +154,6 @@ export default function AbsensiFormModal({ open, initialData, onClose, onSubmit 
                                 ))}
                             </select>
                         </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-slate-700 mb-2">
-                                <div className="flex items-center gap-2">
-                                    <Clock size={16} className="text-emerald-500" />
-                                    Waktu
-                                </div>
-                            </label>
-                            <input
-                                type="time"
-                                name="waktu"
-                                value={form.waktu}
-                                onChange={handleChange}
-                                className="w-full border-2 border-slate-200 rounded-xl px-4 py-3 transition-all duration-300 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 outline-none"
-                            />
-                        </div>
-                    </div>
-
-                    {/* Keterangan */}
-                    <div>
-                        <label className="block text-sm font-medium text-slate-700 mb-2">
-                            <div className="flex items-center gap-2">
-                                <FileText size={16} className="text-emerald-500" />
-                                Keterangan
-                            </div>
-                        </label>
-                        <textarea
-                            name="keterangan"
-                            value={form.keterangan}
-                            onChange={handleChange}
-                            rows={3}
-                            placeholder="Tambahkan keterangan jika diperlukan..."
-                            className="w-full border-2 border-slate-200 rounded-xl px-4 py-3 transition-all duration-300 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 outline-none resize-none"
-                        />
                     </div>
 
                     {error && (

@@ -1,4 +1,4 @@
-import { Users, BookOpen, Calendar, Clock, FileText } from "lucide-react";
+import { Users, BookOpen, Calendar, Clock, FileText, CalendarDays } from "lucide-react";
 import AbsensiRow from "./AbsensiRow";
 
 export default function AbsensiTable({ data, onEdit, onDelete }) {
@@ -32,33 +32,12 @@ export default function AbsensiTable({ data, onEdit, onDelete }) {
                             </th>
                             <th className="px-6 py-4 text-left text-xs font-semibold text-emerald-700 uppercase tracking-wider">
                                 <div className="flex items-center gap-2">
-                                    <BookOpen size={14} />
-                                    Mata Kuliah
-                                </div>
-                            </th>
-                            <th className="px-6 py-4 text-left text-xs font-semibold text-emerald-700 uppercase tracking-wider">
-                                <div className="flex items-center gap-2">
-                                    <Calendar size={14} />
-                                    Pertemuan
-                                </div>
-                            </th>
-                            <th className="px-6 py-4 text-left text-xs font-semibold text-emerald-700 uppercase tracking-wider">
-                                <div className="flex items-center gap-2">
                                     <Calendar size={14} />
                                     Tanggal
                                 </div>
                             </th>
                             <th className="px-6 py-4 text-left text-xs font-semibold text-emerald-700 uppercase tracking-wider">
-                                <div className="flex items-center gap-2">
-                                    <Clock size={14} />
-                                    Waktu
-                                </div>
-                            </th>
-                            <th className="px-6 py-4 text-left text-xs font-semibold text-emerald-700 uppercase tracking-wider">
                                 Status
-                            </th>
-                            <th className="px-6 py-4 text-left text-xs font-semibold text-emerald-700 uppercase tracking-wider">
-                                Keterangan
                             </th>
                             <th className="px-6 py-4 text-center text-xs font-semibold text-emerald-700 uppercase tracking-wider">
                                 Action

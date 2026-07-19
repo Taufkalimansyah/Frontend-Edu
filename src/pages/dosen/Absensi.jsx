@@ -1,119 +1,140 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Sidebar from "../../components/dosen/Sidebar";
 import AbsensiHeader from "../../components/dosen/AbsensiHeader";
 import AbsensiStats from "../../components/dosen/AbsensiStats";
 import AbsensiTable from "../../components/dosen/AbsensiTable";
 import AbsensiFormModal from "../../components/dosen/AbsensiFormModal";
 import Toast from "../../components/dosen/Toast";
-
-// Data dummy
-const dummyAbsensi = [
-    {
-        id: 1,
-        mahasiswa: {
-            name: "Randy Saputra",
-            nim: "20200101",
-            kelas: "IF-3A"
-        },
-        mataKuliah: "Algoritma dan Pemrograman",
-        pertemuan: "Pertemuan 1",
-        tanggal: "2026-07-18",
-        status: "hadir",
-        waktu: "08:00",
-        keterangan: "-"
-    },
-    {
-        id: 2,
-        mahasiswa: {
-            name: "Sarah Dewi",
-            nim: "20200102",
-            kelas: "IF-3A"
-        },
-        mataKuliah: "Algoritma dan Pemrograman",
-        pertemuan: "Pertemuan 1",
-        tanggal: "2026-07-18",
-        status: "hadir",
-        waktu: "07:55",
-        keterangan: "-"
-    },
-    {
-        id: 3,
-        mahasiswa: {
-            name: "Budi Santoso",
-            nim: "20200103",
-            kelas: "IF-3B"
-        },
-        mataKuliah: "Basis Data",
-        pertemuan: "Pertemuan 2",
-        tanggal: "2026-07-19",
-        status: "izin",
-        waktu: "-",
-        keterangan: "Sakit"
-    },
-    {
-        id: 4,
-        mahasiswa: {
-            name: "Maya Putri",
-            nim: "20200104",
-            kelas: "IF-3B"
-        },
-        mataKuliah: "Basis Data",
-        pertemuan: "Pertemuan 2",
-        tanggal: "2026-07-19",
-        status: "hadir",
-        waktu: "08:10",
-        keterangan: "-"
-    },
-    {
-        id: 5,
-        mahasiswa: {
-            name: "Andi Wijaya",
-            nim: "20200105",
-            kelas: "IF-3A"
-        },
-        mataKuliah: "Desain Antarmuka Pengguna",
-        pertemuan: "Pertemuan 3",
-        tanggal: "2026-07-20",
-        status: "alpa",
-        waktu: "-",
-        keterangan: "Tidak hadir tanpa keterangan"
-    },
-    {
-        id: 6,
-        mahasiswa: {
-            name: "Dewi Lestari",
-            nim: "20200106",
-            kelas: "IF-3A"
-        },
-        mataKuliah: "Desain Antarmuka Pengguna",
-        pertemuan: "Pertemuan 3",
-        tanggal: "2026-07-20",
-        status: "hadir",
-        waktu: "07:50",
-        keterangan: "-"
-    }
-];
+import { getClasses, getAttendance, createAttendance, updateAttendance, deleteAttendance, getUsersByRole } from "../../services/api";
+import { AlertCircle, Loader2 } from "lucide-react";
 
 export default function Absensi() {
-    const [absensiList, setAbsensiList] = useState(dummyAbsensi);
+    const [kelasList, setKelasList] = useState([]);
+    const [activeKelas, setActiveKelas] = useState(null);
+    const [mahasiswaList, setMahasiswaList] = useState([]); // List of students for the active class
+    
+    const [absensiList, setAbsensiList] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
     const [filterStatus, setFilterStatus] = useState("semua");
-    const [filterKelas, setFilterKelas] = useState("semua");
+    
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    
     const [showForm, setShowForm] = useState(false);
     const [editingData, setEditingData] = useState(null);
     const [toast, setToast] = useState(null);
 
-    // Get unique kelas for filter
-    const kelasList = ["semua", ...new Set(absensiList.map(item => item.mahasiswa.kelas))];
+    // Fetch classes on mount
+    useEffect(() => {
+        fetchClasses();
+        fetchAllMahasiswa();
+    }, []);
+
+    // Fetch attendance when active class changes
+    useEffect(() => {
+        if (activeKelas) {
+            fetchAttendance(activeKelas);
+        } else {
+            setAbsensiList([]);
+        }
+    }, [activeKelas]);
+
+    const fetchClasses = async () => {
+        try {
+            setLoading(true);
+            const { data } = await getClasses();
+            setKelasList(data);
+            if (data.length > 0) {
+                setActiveKelas(data[0].id);
+            }
+        } catch (err) {
+            setError(err.response?.data?.message || "Gagal memuat daftar kelas");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchAttendance = async (classId) => {
+        try {
+            setLoading(true);
+            const { data } = await getAttendance(classId);
+            setAbsensiList(data);
+        } catch (err) {
+            setError(err.response?.data?.message || "Gagal memuat data absensi");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const fetchAllMahasiswa = async () => {
+        try {
+            const { data } = await getUsersByRole("mahasiswa");
+            setMahasiswaList(data || []);
+        } catch (err) {
+            console.error("Gagal memuat daftar mahasiswa:", err);
+        }
+    };
+
+    const showToast = (message, type) => {
+        setToast({ message, type });
+        setTimeout(() => setToast(null), 3000);
+    };
+
+    const handleAdd = async (formData) => {
+        try {
+            const payload = {
+                mahasiswa_id: formData.mahasiswa_id,
+                tanggal: formData.tanggal,
+                status: formData.status
+            };
+            await createAttendance(activeKelas, payload);
+            await fetchAttendance(activeKelas);
+            setShowForm(false);
+            showToast("✅ Tambah absensi selesai!", "success");
+        } catch (err) {
+            showToast("❌ Gagal menambahkan absensi!", "error");
+        }
+    };
+
+    const handleEdit = async (formData) => {
+        try {
+            const payload = {
+                tanggal: formData.tanggal,
+                status: formData.status
+            };
+            await updateAttendance(editingData.id, payload);
+            await fetchAttendance(activeKelas);
+            setEditingData(null);
+            setShowForm(false);
+            showToast("✅ Absensi berhasil diperbarui!", "success");
+        } catch (err) {
+            showToast("❌ Gagal memperbarui absensi!", "error");
+        }
+    };
+
+    const handleDelete = async (id) => {
+        if (window.confirm("Yakin ingin menghapus data absensi ini?")) {
+            try {
+                await deleteAttendance(id);
+                await fetchAttendance(activeKelas);
+                showToast("🗑️ Absensi berhasil dihapus!", "warning");
+            } catch (err) {
+                showToast("❌ Gagal menghapus absensi!", "error");
+            }
+        }
+    };
+
+    const handleEditClick = (item) => {
+        setEditingData(item);
+        setShowForm(true);
+    };
 
     // Filter data
     const filteredData = absensiList.filter(item => {
-        const matchSearch = item.mahasiswa.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           item.mahasiswa.nim.includes(searchTerm) ||
-                           item.mataKuliah.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchSearch = item.mahasiswa?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           item.mahasiswa?.nim?.includes(searchTerm);
         const matchStatus = filterStatus === "semua" || item.status === filterStatus;
-        const matchKelas = filterKelas === "semua" || item.mahasiswa.kelas === filterKelas;
-        return matchSearch && matchStatus && matchKelas;
+        return matchSearch && matchStatus;
     });
 
     // Stats
@@ -121,67 +142,10 @@ export default function Absensi() {
         total: absensiList.length,
         hadir: absensiList.filter(a => a.status === "hadir").length,
         izin: absensiList.filter(a => a.status === "izin").length,
-        alpa: absensiList.filter(a => a.status === "alpa").length,
-        persentase: Math.round(
-            (absensiList.filter(a => a.status === "hadir").length / absensiList.length) * 100
-        )
-    };
-
-    const handleAdd = (data) => {
-        const newAbsensi = {
-            id: Date.now(),
-            ...data,
-            mahasiswa: {
-                name: data.mahasiswaName,
-                nim: data.mahasiswaNim,
-                kelas: data.mahasiswaKelas
-            }
-        };
-        setAbsensiList([newAbsensi, ...absensiList]);
-        setShowForm(false);
-        setToast({
-            message: "✅ Absensi berhasil ditambahkan!",
-            type: "success"
-        });
-        setTimeout(() => setToast(null), 3000);
-    };
-
-    const handleEdit = (data) => {
-        setAbsensiList(prev =>
-            prev.map(item =>
-                item.id === editingData.id
-                    ? {
-                        ...item,
-                        status: data.status,
-                        keterangan: data.keterangan,
-                        waktu: data.waktu
-                      }
-                    : item
-            )
-        );
-        setEditingData(null);
-        setShowForm(false);
-        setToast({
-            message: "✅ Absensi berhasil diperbarui!",
-            type: "success"
-        });
-        setTimeout(() => setToast(null), 3000);
-    };
-
-    const handleDelete = (id) => {
-        if (window.confirm("Yakin ingin menghapus data absensi ini?")) {
-            setAbsensiList(prev => prev.filter(item => item.id !== id));
-            setToast({
-                message: "🗑️ Absensi berhasil dihapus!",
-                type: "warning"
-            });
-            setTimeout(() => setToast(null), 3000);
-        }
-    };
-
-    const handleEditClick = (item) => {
-        setEditingData(item);
-        setShowForm(true);
+        alpha: absensiList.filter(a => a.status === "alpha").length,
+        persentase: absensiList.length > 0 
+            ? Math.round((absensiList.filter(a => a.status === "hadir").length / absensiList.length) * 100)
+            : 0
     };
 
     return (
@@ -194,27 +158,54 @@ export default function Absensi() {
                     setSearchTerm={setSearchTerm}
                     filterStatus={filterStatus}
                     setFilterStatus={setFilterStatus}
-                    filterKelas={filterKelas}
-                    setFilterKelas={setFilterKelas}
+                    filterKelas={activeKelas || ""}
+                    setFilterKelas={setActiveKelas}
                     kelasList={kelasList}
                     onAddClick={() => {
+                        if (!activeKelas) {
+                            showToast("⚠️ Pilih kelas terlebih dahulu!", "warning");
+                            return;
+                        }
                         setEditingData(null);
                         setShowForm(true);
                     }}
                 />
 
-                <AbsensiStats stats={stats} />
+                {error && (
+                    <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-2xl flex items-center gap-3 text-red-600">
+                        <AlertCircle size={20} className="text-red-500 flex-shrink-0" />
+                        <p>{error}</p>
+                    </div>
+                )}
 
-                <AbsensiTable
-                    data={filteredData}
-                    onEdit={handleEditClick}
-                    onDelete={handleDelete}
-                />
+                {loading ? (
+                    <div className="flex flex-col items-center justify-center py-20">
+                        <Loader2 className="w-12 h-12 text-emerald-500 animate-spin mb-4" />
+                        <p className="text-slate-500 font-medium animate-pulse">Memuat data absensi...</p>
+                    </div>
+                ) : (
+                    <>
+                        <AbsensiStats stats={stats} />
+
+                        {activeKelas ? (
+                            <AbsensiTable
+                                data={filteredData}
+                                onEdit={handleEditClick}
+                                onDelete={handleDelete}
+                            />
+                        ) : (
+                            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-12 text-center">
+                                <p className="text-slate-500">Pilih kelas dari dropdown untuk melihat absensi.</p>
+                            </div>
+                        )}
+                    </>
+                )}
 
                 {showForm && (
                     <AbsensiFormModal
                         open={showForm}
                         initialData={editingData}
+                        mahasiswaList={mahasiswaList}
                         onClose={() => {
                             setShowForm(false);
                             setEditingData(null);
