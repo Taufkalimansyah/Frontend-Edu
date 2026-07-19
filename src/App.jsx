@@ -21,6 +21,7 @@ import UploadMateri from "./pages/dosen/UploadMateri";
 import BuatTugas from "./pages/dosen/BuatTugas";
 import Penilaian from "./pages/dosen/Penilaian";
 import Absensi from "./pages/dosen/Absensi";
+import KelasDetail from "./pages/dosen/KelasDetail";
 
 /* ================= PROTECTED ROUTE ================= */
 import ProtectedRoute from "./routes/ProtectedRoute";
@@ -169,6 +170,24 @@ export default function App() {
           </ProtectedRoute>
         }
       />
+
+      <Route
+  path="/dosen/kelas"
+  element={
+    <ProtectedRoute role="dosen">
+      <KelasDosen />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/dosen/kelas/:id"
+  element={
+    <ProtectedRoute role="dosen">
+      <KelasDetail />
+    </ProtectedRoute>
+  }
+/>
 
       <Route
         path="/dosen/absensi"
