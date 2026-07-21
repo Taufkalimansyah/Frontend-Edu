@@ -41,7 +41,7 @@ export default function KelasCard({ item, onClick }) {
                         <div className="p-1.5 bg-emerald-50 rounded-lg">
                             <Users size={15} className="text-emerald-500" />
                         </div>
-                        <span>{item.jumlah_mahasiswa || 0} Mahasiswa</span>
+                        <span>{item.mahasiswa_count} Mahasiswa</span>
                     </div>
                 </div>
 

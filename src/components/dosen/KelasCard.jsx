@@ -82,7 +82,7 @@ export default function KelasCard({ kelas, onClick, onEditClick, onDeleteClick }
                 <div className="space-y-2">
                     <div className="flex items-center gap-2 text-sm text-slate-600">
                         <span className="text-emerald-500">👥</span>
-                        <span>{kelas.jumlah_mahasiswa || 0} Mahasiswa</span>
+                        <span>{kelas.mahasiswa_count} Mahasiswa</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm text-slate-600">
                         <span className="text-emerald-500">📅</span>
