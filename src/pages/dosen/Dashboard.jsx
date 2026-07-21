@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getClasses } from "../../services/api";
 import Sidebar from "../../components/dosen/Sidebar";
 import DashboardStats from "../../components/dosen/DashboardStats";
 import DashboardCharts from "../../components/dosen/DashboardCharts";
@@ -73,18 +74,55 @@ const dummyActivities = [
   }
 ];
 
-// Data dummy untuk statistik
-const statsData = {
-  totalKelas: 4,
-  totalMahasiswa: 126,
-  tugasAktif: 8,
-  materiUpload: 32,
-  persentaseKehadiran: 85,
-  rataRataNilai: 78
-};
-
 export default function Dashboard() {
   const [activities] = useState(dummyActivities);
+
+  const [statsData, setStatsData] = useState({
+  totalKelas: 0,
+  totalMahasiswa: 0,
+  tugasAktif: 0,
+  materiUpload: 0,
+  persentaseKehadiran: 0,
+  rataRataNilai: 0,
+});
+
+useEffect(() => {
+  fetchDashboard();
+}, []);
+
+const fetchDashboard = async () => {
+  try {
+    const res = await getClasses();
+
+    const classes = res.data;
+
+    setStatsData({
+      totalKelas: classes.length,
+
+      totalMahasiswa: classes.reduce(
+        (total, kelas) => total + (kelas.mahasiswa_count ?? 0),
+        0
+      ),
+
+      tugasAktif: classes.reduce(
+        (total, kelas) => total + kelas.tugas.length,
+        0
+      ),
+
+      materiUpload: classes.reduce(
+        (total, kelas) => total + kelas.materi.length,
+        0
+      ),
+
+      // sementara
+      persentaseKehadiran: 0,
+      rataRataNilai: 0,
+    });
+
+  } catch (err) {
+    console.error(err);
+  }
+};
 
   return (
     <div className="flex min-h-screen bg-slate-50">

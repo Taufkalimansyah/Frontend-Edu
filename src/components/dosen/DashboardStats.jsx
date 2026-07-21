@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { 
   BookOpen, 
   Users, 
@@ -7,6 +8,34 @@ import {
   CalendarCheck,
   Award
 } from "lucide-react";
+
+function Counter({ value }) {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    const target = Number(value) || 0;
+
+    let current = 0;
+    const duration = 1000;
+    const steps = 40;
+    const increment = Math.max(1, Math.ceil(target / steps));
+
+    const timer = setInterval(() => {
+      current += increment;
+
+      if (current >= target) {
+        current = target;
+        clearInterval(timer);
+      }
+
+      setCount(current);
+    }, duration / steps);
+
+    return () => clearInterval(timer);
+  }, [value]);
+
+  return <>{count}</>;
+}
 
 export default function DashboardStats({ stats }) {
   const statItems = [
@@ -83,7 +112,7 @@ export default function DashboardStats({ stats }) {
             <div>
               <p className="text-sm text-slate-500 font-medium">{item.label}</p>
               <p className="text-3xl font-bold text-slate-800 mt-1">
-                {item.value}
+                 <Counter value={item.value} />
               </p>
               <p className={`text-xs mt-2 ${item.trendColor} flex items-center gap-1`}>
                 <TrendingUp size={12} />
