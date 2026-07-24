@@ -4,33 +4,33 @@ import AbsensiHeader from "../../components/dosen/AbsensiHeader";
 import AbsensiStats from "../../components/dosen/AbsensiStats";
 import AbsensiTable from "../../components/dosen/AbsensiTable";
 import AbsensiFormModal from "../../components/dosen/AbsensiFormModal";
+import AbsensiDetailModal from "../../components/dosen/AbsensiDetailModal";
 import Toast from "../../components/dosen/Toast";
-import { getClasses, getAttendance, createAttendance, updateAttendance, deleteAttendance, getUsersByRole } from "../../services/api";
+import { getClasses, getAttendance, getAttendanceDetail, createAttendance, updateAttendance, deleteAttendance } from "../../services/api";
 import { AlertCircle, Loader2 } from "lucide-react";
 
 export default function Absensi() {
     const [kelasList, setKelasList] = useState([]);
     const [activeKelas, setActiveKelas] = useState(null);
-    const [mahasiswaList, setMahasiswaList] = useState([]); // List of students for the active class
-    
+
     const [absensiList, setAbsensiList] = useState([]);
     const [searchTerm, setSearchTerm] = useState("");
-    const [filterStatus, setFilterStatus] = useState("semua");
-    
+
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    
+
     const [showForm, setShowForm] = useState(false);
     const [editingData, setEditingData] = useState(null);
     const [toast, setToast] = useState(null);
 
-    // Fetch classes on mount
+    const [showDetail, setShowDetail] = useState(false);
+    const [detailLoading, setDetailLoading] = useState(false);
+    const [detailData, setDetailData] = useState(null);
+
     useEffect(() => {
         fetchClasses();
-        fetchAllMahasiswa();
     }, []);
 
-    // Fetch attendance when active class changes
     useEffect(() => {
         if (activeKelas) {
             fetchAttendance(activeKelas);
@@ -66,15 +66,6 @@ export default function Absensi() {
         }
     };
 
-    const fetchAllMahasiswa = async () => {
-        try {
-            const { data } = await getUsersByRole("mahasiswa");
-            setMahasiswaList(data || []);
-        } catch (err) {
-            console.error("Gagal memuat daftar mahasiswa:", err);
-        }
-    };
-
     const showToast = (message, type) => {
         setToast({ message, type });
         setTimeout(() => setToast(null), 3000);
@@ -83,43 +74,48 @@ export default function Absensi() {
     const handleAdd = async (formData) => {
         try {
             const payload = {
-                mahasiswa_id: formData.mahasiswa_id,
-                tanggal: formData.tanggal,
-                status: formData.status
+                pertemuan: formData.pertemuan,
+                tanggal_mulai: formData.tanggal_mulai,
+                tanggal_selesai: formData.tanggal_selesai,
+                waktu_mulai: formData.waktu_mulai,
+                waktu_selesai: formData.waktu_selesai
             };
             await createAttendance(activeKelas, payload);
             await fetchAttendance(activeKelas);
             setShowForm(false);
-            showToast("✅ Tambah absensi selesai!", "success");
+            showToast("✅ Sesi absensi berhasil dibuat!", "success");
         } catch (err) {
-            showToast("❌ Gagal menambahkan absensi!", "error");
+            showToast("❌ Gagal membuat sesi absensi!", "error");
         }
     };
 
     const handleEdit = async (formData) => {
         try {
             const payload = {
-                tanggal: formData.tanggal,
-                status: formData.status
+                pertemuan: formData.pertemuan,
+                tanggal_mulai: formData.tanggal_mulai,
+                tanggal_selesai: formData.tanggal_selesai,
+                waktu_mulai: formData.waktu_mulai,
+                waktu_selesai: formData.waktu_selesai
             };
             await updateAttendance(editingData.id, payload);
             await fetchAttendance(activeKelas);
             setEditingData(null);
             setShowForm(false);
-            showToast("✅ Absensi berhasil diperbarui!", "success");
+            showToast("✅ Sesi absensi berhasil diperbarui!", "success");
         } catch (err) {
-            showToast("❌ Gagal memperbarui absensi!", "error");
+            showToast("❌ Gagal memperbarui sesi absensi!", "error");
         }
     };
 
     const handleDelete = async (id) => {
-        if (window.confirm("Yakin ingin menghapus data absensi ini?")) {
+        if (window.confirm("Yakin ingin menghapus sesi absensi ini?")) {
             try {
                 await deleteAttendance(id);
                 await fetchAttendance(activeKelas);
-                showToast("🗑️ Absensi berhasil dihapus!", "warning");
+                showToast("🗑️ Sesi absensi berhasil dihapus!", "warning");
             } catch (err) {
-                showToast("❌ Gagal menghapus absensi!", "error");
+                showToast("❌ Gagal menghapus sesi absensi!", "error");
             }
         }
     };
@@ -129,35 +125,39 @@ export default function Absensi() {
         setShowForm(true);
     };
 
-    // Filter data
-    const filteredData = absensiList.filter(item => {
-        const matchSearch = item.mahasiswa?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           item.mahasiswa?.nim?.includes(searchTerm);
-        const matchStatus = filterStatus === "semua" || item.status === filterStatus;
-        return matchSearch && matchStatus;
-    });
+    const handleDetailClick = async (item) => {
+        setShowDetail(true);
+        setDetailLoading(true);
+        try {
+            const { data } = await getAttendanceDetail(item.id);
+            setDetailData(data);
+        } catch (err) {
+            showToast("❌ Gagal memuat detail absensi!", "error");
+            setShowDetail(false);
+        } finally {
+            setDetailLoading(false);
+        }
+    };
 
-    // Stats
+    const filteredData = absensiList.filter(item =>
+        item.pertemuan?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+
     const stats = {
-        total: absensiList.length,
-        hadir: absensiList.filter(a => a.status === "hadir").length,
-        izin: absensiList.filter(a => a.status === "izin").length,
-        alpha: absensiList.filter(a => a.status === "alpha").length,
-        persentase: absensiList.length > 0 
-            ? Math.round((absensiList.filter(a => a.status === "hadir").length / absensiList.length) * 100)
-            : 0
+        totalSesi: absensiList.length,
+        totalHadir: absensiList.reduce((sum, s) => sum + (s.hadir_count || 0), 0),
+        totalIzin: absensiList.reduce((sum, s) => sum + (s.izin_count || 0), 0),
+        totalAlpha: absensiList.reduce((sum, s) => sum + (s.alpha_count || 0), 0),
     };
 
     return (
         <div className="flex min-h-screen bg-slate-50">
             <Sidebar />
-            
+
             <main className="ml-72 flex-1 p-8">
                 <AbsensiHeader
                     searchTerm={searchTerm}
                     setSearchTerm={setSearchTerm}
-                    filterStatus={filterStatus}
-                    setFilterStatus={setFilterStatus}
                     filterKelas={activeKelas || ""}
                     setFilterKelas={setActiveKelas}
                     kelasList={kelasList}
@@ -190,12 +190,13 @@ export default function Absensi() {
                         {activeKelas ? (
                             <AbsensiTable
                                 data={filteredData}
+                                onDetail={handleDetailClick}
                                 onEdit={handleEditClick}
                                 onDelete={handleDelete}
                             />
                         ) : (
                             <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-12 text-center">
-                                <p className="text-slate-500">Pilih kelas dari dropdown untuk melihat absensi.</p>
+                                <p className="text-slate-500">Pilih kelas dari dropdown untuk melihat sesi absensi.</p>
                             </div>
                         )}
                     </>
@@ -205,12 +206,23 @@ export default function Absensi() {
                     <AbsensiFormModal
                         open={showForm}
                         initialData={editingData}
-                        mahasiswaList={mahasiswaList}
                         onClose={() => {
                             setShowForm(false);
                             setEditingData(null);
                         }}
                         onSubmit={editingData ? handleEdit : handleAdd}
+                    />
+                )}
+
+                {showDetail && (
+                    <AbsensiDetailModal
+                        open={showDetail}
+                        loading={detailLoading}
+                        detail={detailData}
+                        onClose={() => {
+                            setShowDetail(false);
+                            setDetailData(null);
+                        }}
                     />
                 )}
 

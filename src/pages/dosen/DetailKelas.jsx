@@ -5,9 +5,8 @@ import DetailKelasHeader from "../../components/mahasiswa/DetailKelasHeader";
 import DetailKelasTabs from "../../components/mahasiswa/DetailKelasTabs";
 import MateriTab from "../../components/mahasiswa/MateriTab";
 import TugasTab from "../../components/mahasiswa/TugasTab";
-import AbsensiTab from "../../components/mahasiswa/AbsensiTab";
 import RingkasanTugas from "../../components/mahasiswa/RingkasanTugas";
-import { getClass, getMaterials, getTugasList, downloadMateri, getMySubmissions, getAttendance, isiAttendance } from "../../services/api";
+import { getClass, getMaterials, getTugasList, downloadMateri } from "../../services/api";
 import { Loader2 } from "lucide-react";
 
 export default function DetailKelas() {
@@ -15,8 +14,6 @@ export default function DetailKelas() {
     const [kelas, setKelas] = useState(null);
     const [materiList, setMateriList] = useState([]);
     const [tugasList, setTugasList] = useState([]);
-    const [submissionList, setSubmissionList] = useState([]);
-    const [absensiList, setAbsensiList] = useState([]);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState("materi");
     const [expandedId, setExpandedId] = useState(null);
@@ -28,12 +25,10 @@ export default function DetailKelas() {
     const fetchAll = async () => {
         try {
             setLoading(true);
-            const [kelasRes, materiRes, tugasRes, submissionRes, absensiRes] = await Promise.all([
+            const [kelasRes, materiRes, tugasRes] = await Promise.all([
                 getClass(id),
                 getMaterials(),
                 getTugasList(),
-                getMySubmissions(),
-                getAttendance(id),
             ]);
 
             setKelas(kelasRes.data);
@@ -42,35 +37,11 @@ export default function DetailKelas() {
             setMateriList(allMateri.filter(m => String(m.kelas_id) === String(id)));
 
             const allTugas = Array.isArray(tugasRes.data) ? tugasRes.data : (tugasRes.data?.data ?? []);
-            const tugasKelasIni = allTugas.filter(t => String(t.kelas_id) === String(id));
-            setTugasList(tugasKelasIni);
-
-            const allSubmissions = Array.isArray(submissionRes.data) ? submissionRes.data : (submissionRes.data?.data ?? []);
-            setSubmissionList(allSubmissions);
-
-            setAbsensiList(absensiRes.data || []);
+            setTugasList(allTugas.filter(t => String(t.kelas_id) === String(id)));
         } catch (err) {
             console.error(err);
         } finally {
             setLoading(false);
-        }
-    };
-
-    const fetchAttendanceOnly = async () => {
-        try {
-            const { data } = await getAttendance(id);
-            setAbsensiList(data || []);
-        } catch (err) {
-            console.error(err);
-        }
-    };
-
-    const handleIsiAbsensi = async (sesiId, status) => {
-        try {
-            await isiAttendance(sesiId, { status });
-            await fetchAttendanceOnly();
-        } catch (err) {
-            console.error(err);
         }
     };
 
@@ -96,7 +67,7 @@ export default function DetailKelas() {
 
     if (loading) {
         return (
-            <div className="flex min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+            <div className="flex min-h-screen bg-slate-50">
                 <Sidebar />
                 <main className="ml-72 flex-1 p-10 flex flex-col items-center justify-center">
                     <Loader2 className="w-10 h-10 text-emerald-600 animate-spin mb-3" />
@@ -108,7 +79,7 @@ export default function DetailKelas() {
 
     if (!kelas) {
         return (
-            <div className="flex min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+            <div className="flex min-h-screen bg-slate-50">
                 <Sidebar />
                 <main className="ml-72 flex-1 p-10">
                     <p className="text-slate-500">Kelas tidak ditemukan.</p>
@@ -118,16 +89,11 @@ export default function DetailKelas() {
     }
 
     return (
-        <div className="flex min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+        <div className="flex min-h-screen bg-slate-50">
             <Sidebar />
 
-            <main className="ml-72 flex-1 p-8 md:p-10">
-                <DetailKelasHeader
-                    namaKelas={kelas.nama}
-                    kodeKelas={kelas.kode}
-                    dosen={kelas.dosen?.name}
-                    mahasiswaCount={kelas.mahasiswa?.length || 0}
-                />
+            <main className="ml-72 flex-1 p-10">
+                <DetailKelasHeader namaKelas={kelas.nama} />
 
                 <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8">
                     <div>
@@ -145,17 +111,9 @@ export default function DetailKelas() {
                         {activeTab === "tugas" && (
                             <TugasTab tugasList={tugasList} />
                         )}
-
-                        {activeTab === "absensi" && (
-                            <AbsensiTab absensiList={absensiList} onIsi={handleIsiAbsensi} />
-                        )}
                     </div>
 
-                    <RingkasanTugas
-                        tugasList={tugasList}
-                        submissionList={submissionList}
-                        totalMateri={materiList.length}
-                    />
+                    <RingkasanTugas totalTugas={tugasList.length} totalMateri={materiList.length} />
                 </div>
             </main>
         </div>

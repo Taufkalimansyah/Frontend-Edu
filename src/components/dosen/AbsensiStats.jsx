@@ -1,46 +1,39 @@
-import { Users, CheckCircle, Clock, XCircle, TrendingUp } from "lucide-react";
+import { Layers, CheckCircle, Clock, XCircle } from "lucide-react";
 
 export default function AbsensiStats({ stats }) {
     const statItems = [
         {
-            label: "Total Mahasiswa",
-            value: stats.total,
-            icon: Users,
+            label: "Total Sesi",
+            value: stats.totalSesi ?? 0,
+            icon: Layers,
             bgColor: "bg-emerald-100",
             iconColor: "text-emerald-600"
         },
         {
             label: "Hadir",
-            value: stats.hadir,
+            value: stats.totalHadir ?? 0,
             icon: CheckCircle,
             bgColor: "bg-green-100",
             iconColor: "text-green-600"
         },
         {
             label: "Izin",
-            value: stats.izin,
+            value: stats.totalIzin ?? 0,
             icon: Clock,
             bgColor: "bg-yellow-100",
             iconColor: "text-yellow-600"
         },
         {
             label: "Alpha",
-            value: stats.alpha,
+            value: stats.totalAlpha ?? 0,
             icon: XCircle,
             bgColor: "bg-red-100",
             iconColor: "text-red-600"
-        },
-        {
-            label: "Persentase Kehadiran",
-            value: `${stats.persentase}%`,
-            icon: TrendingUp,
-            bgColor: "bg-blue-100",
-            iconColor: "text-blue-600"
         }
     ];
 
     return (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             {statItems.map((item, index) => (
                 <div
                     key={index}

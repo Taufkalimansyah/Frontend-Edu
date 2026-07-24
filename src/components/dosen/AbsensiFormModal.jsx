@@ -1,32 +1,32 @@
 import { useEffect, useState } from "react";
-import { X, User, Calendar, Clock, AlertCircle, CalendarDays } from "lucide-react";
+import { X, Calendar, Clock, AlertCircle, CalendarDays, BookOpen } from "lucide-react";
 
-export default function AbsensiFormModal({ open, initialData, mahasiswaList, onClose, onSubmit }) {
+export default function AbsensiFormModal({ open, initialData, onClose, onSubmit }) {
     const [form, setForm] = useState({
-        mahasiswa_id: "",
-        tanggal: "",
-        status: "hadir"
+        pertemuan: "",
+        tanggal_mulai: "",
+        tanggal_selesai: "",
+        waktu_mulai: "",
+        waktu_selesai: ""
     });
     const [error, setError] = useState(null);
-
-    const statusList = [
-        { value: "hadir", label: "Hadir" },
-        { value: "izin", label: "Izin" },
-        { value: "alpha", label: "Alpha" }
-    ];
 
     useEffect(() => {
         if (initialData) {
             setForm({
-                mahasiswa_id: initialData.mahasiswa_id || initialData.mahasiswa?.id || "",
-                tanggal: initialData.tanggal || "",
-                status: initialData.status || "hadir"
+                pertemuan: initialData.pertemuan || "",
+                tanggal_mulai: initialData.tanggal_mulai || "",
+                tanggal_selesai: initialData.tanggal_selesai || "",
+                waktu_mulai: initialData.waktu_mulai || "",
+                waktu_selesai: initialData.waktu_selesai || ""
             });
         } else {
             setForm({
-                mahasiswa_id: "",
-                tanggal: "",
-                status: "hadir"
+                pertemuan: "",
+                tanggal_mulai: "",
+                tanggal_selesai: "",
+                waktu_mulai: "",
+                waktu_selesai: ""
             });
         }
         setError(null);
@@ -36,24 +36,46 @@ export default function AbsensiFormModal({ open, initialData, mahasiswaList, onC
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setForm(prev => ({ ...prev, [name]: value }));
+        setForm(prev => ({
+            ...prev,
+            [name]: value
+        }));
         setError(null);
     };
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        
-        // If editing, mahasiswa_id might not be changeable but we still need it
-        if (!initialData && !form.mahasiswa_id) {
-            setError("Mahasiswa wajib dipilih");
+
+        if (!form.pertemuan.trim()) {
+            setError("Pertemuan wajib diisi");
             return;
         }
 
-        if (!form.tanggal) {
-            setError("Tanggal wajib diisi");
+        if (!form.tanggal_mulai) {
+            setError("Tanggal mulai wajib diisi");
             return;
         }
-        
+
+        if (!form.tanggal_selesai) {
+            setError("Tanggal selesai wajib diisi");
+            return;
+        }
+
+        if (new Date(form.tanggal_selesai) < new Date(form.tanggal_mulai)) {
+            setError("Tanggal selesai harus lebih besar dari tanggal mulai");
+            return;
+        }
+
+        if (!form.waktu_mulai) {
+            setError("Waktu mulai wajib diisi");
+            return;
+        }
+
+        if (!form.waktu_selesai) {
+            setError("Waktu selesai wajib diisi");
+            return;
+        }
+
         onSubmit(form);
     };
 
@@ -68,10 +90,10 @@ export default function AbsensiFormModal({ open, initialData, mahasiswaList, onC
                         </div>
                         <div>
                             <h2 className="text-xl font-bold bg-gradient-to-r from-emerald-600 to-emerald-400 bg-clip-text text-transparent">
-                                {initialData ? "Edit Absensi" : "Tambah Absensi"}
+                                {initialData ? "Edit Absensi" : "Buat Absensi Periode"}
                             </h2>
                             <p className="text-xs text-slate-500">
-                                {initialData ? "Perbarui data absensi" : "Tambahkan data absensi baru"}
+                                {initialData ? "Perbarui data absensi" : "Buat sesi absensi untuk periode tertentu"}
                             </p>
                         </div>
                     </div>
@@ -84,51 +106,72 @@ export default function AbsensiFormModal({ open, initialData, mahasiswaList, onC
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-5">
-                    {/* Mahasiswa (Only show if adding, or disabled if editing) */}
+                    {/* Pertemuan */}
                     <div>
                         <label className="block text-sm font-medium text-slate-700 mb-2">
                             <div className="flex items-center gap-2">
-                                <User size={16} className="text-emerald-500" />
-                                Mahasiswa
+                                <BookOpen size={16} className="text-emerald-500" />
+                                Pertemuan
                             </div>
                         </label>
-                        {initialData ? (
-                            <input
-                                type="text"
-                                value={`${initialData.mahasiswa?.name} (${initialData.mahasiswa?.nim})`}
-                                disabled
-                                className="w-full border-2 border-slate-200 rounded-xl px-4 py-3 bg-slate-50 text-slate-500 outline-none cursor-not-allowed"
-                            />
-                        ) : (
-                            <select
-                                name="mahasiswa_id"
-                                value={form.mahasiswa_id}
-                                onChange={handleChange}
-                                className="w-full border-2 border-slate-200 rounded-xl px-4 py-3 transition-all duration-300 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 outline-none bg-white"
-                            >
-                                <option value="">Pilih Mahasiswa</option>
-                                {mahasiswaList?.map(mhs => (
-                                    <option key={mhs.id} value={mhs.id}>
-                                        {mhs.nim} - {mhs.name}
-                                    </option>
-                                ))}
-                            </select>
-                        )}
+                        <input
+                            type="text"
+                            name="pertemuan"
+                            value={form.pertemuan}
+                            onChange={handleChange}
+                            placeholder="Contoh: Pertemuan 1 - Pengenalan Algoritma"
+                            className="w-full border-2 border-slate-200 rounded-xl px-4 py-3 transition-all duration-300 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 outline-none"
+                        />
                     </div>
 
-                    {/* Tanggal & Status */}
+                    {/* Periode Tanggal */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-medium text-slate-700 mb-2">
                                 <div className="flex items-center gap-2">
                                     <Calendar size={16} className="text-emerald-500" />
-                                    Tanggal
+                                    Tanggal Mulai
                                 </div>
                             </label>
                             <input
                                 type="date"
-                                name="tanggal"
-                                value={form.tanggal}
+                                name="tanggal_mulai"
+                                value={form.tanggal_mulai}
+                                onChange={handleChange}
+                                className="w-full border-2 border-slate-200 rounded-xl px-4 py-3 transition-all duration-300 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 outline-none"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                                <div className="flex items-center gap-2">
+                                    <Calendar size={16} className="text-emerald-500" />
+                                    Tanggal Selesai
+                                </div>
+                            </label>
+                            <input
+                                type="date"
+                                name="tanggal_selesai"
+                                value={form.tanggal_selesai}
+                                onChange={handleChange}
+                                className="w-full border-2 border-slate-200 rounded-xl px-4 py-3 transition-all duration-300 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 outline-none"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Waktu */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-2">
+                                <div className="flex items-center gap-2">
+                                    <Clock size={16} className="text-emerald-500" />
+                                    Waktu Mulai
+                                </div>
+                            </label>
+                            <input
+                                type="time"
+                                name="waktu_mulai"
+                                value={form.waktu_mulai}
                                 onChange={handleChange}
                                 className="w-full border-2 border-slate-200 rounded-xl px-4 py-3 transition-all duration-300 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 outline-none"
                             />
@@ -138,21 +181,16 @@ export default function AbsensiFormModal({ open, initialData, mahasiswaList, onC
                             <label className="block text-sm font-medium text-slate-700 mb-2">
                                 <div className="flex items-center gap-2">
                                     <Clock size={16} className="text-emerald-500" />
-                                    Status
+                                    Waktu Selesai
                                 </div>
                             </label>
-                            <select
-                                name="status"
-                                value={form.status}
+                            <input
+                                type="time"
+                                name="waktu_selesai"
+                                value={form.waktu_selesai}
                                 onChange={handleChange}
-                                className="w-full border-2 border-slate-200 rounded-xl px-4 py-3 transition-all duration-300 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 outline-none bg-white"
-                            >
-                                {statusList.map(status => (
-                                    <option key={status.value} value={status.value}>
-                                        {status.label}
-                                    </option>
-                                ))}
-                            </select>
+                                className="w-full border-2 border-slate-200 rounded-xl px-4 py-3 transition-all duration-300 focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 outline-none"
+                            />
                         </div>
                     </div>
 
@@ -176,7 +214,8 @@ export default function AbsensiFormModal({ open, initialData, mahasiswaList, onC
                             type="submit"
                             className="px-6 py-2.5 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-medium shadow-lg shadow-emerald-200 hover:shadow-xl hover:shadow-emerald-300 hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2"
                         >
-                            {initialData ? "Update Absensi" : "Tambah Absensi"}
+                            <CalendarDays size={18} />
+                            {initialData ? "Update Absensi" : "Buat Absensi"}
                         </button>
                     </div>
                 </form>

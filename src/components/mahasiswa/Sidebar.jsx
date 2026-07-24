@@ -207,8 +207,6 @@ export default function Sidebar() {
                         © 2026 EduOnline
                     </p>
                     <p className="text-[10px] text-slate-400 flex items-center justify-center gap-1">
-                        <span className="inline-block w-1 h-1 bg-emerald-400 rounded-full"></span>
-                        Made with ❤️
                     </p>
                 </div>
             </div>
