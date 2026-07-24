@@ -12,6 +12,7 @@ import DashboardMahasiswa from "./pages/mahasiswa/Dashboard";
 import KelasSaya from "./pages/mahasiswa/KelasSaya";
 import DetailKelas from "./pages/mahasiswa/DetailKelas";
 import Nilai from "./pages/mahasiswa/Nilai";
+import TugasDetail from "./pages/mahasiswa/TugasDetail";
 
 /* ================= DOSEN ================= */
 import DashboardDosen from "./pages/dosen/Dashboard";
@@ -109,6 +110,15 @@ export default function App() {
         element={
           <ProtectedRoute role="mahasiswa">
             <Nilai />
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path="/mahasiswa/tugas/:id"
+        element={
+          <ProtectedRoute role="mahasiswa">
+            <TugasDetail />
           </ProtectedRoute>
         }
       />

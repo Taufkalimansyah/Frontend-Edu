@@ -57,15 +57,20 @@ export const submitTugas = (tugasId, formData) =>
   });
 export const getSubmissionsForDosen = () => api.get("/submissions");
 export const gradeSubmission = (id, nilai, feedback) => api.put(`/submissions/${id}`, { nilai, feedback });
+export const downloadSubmission = (id) =>
+  api.get(`/submissions/${id}/download`, { responseType: "blob" });
+export const getMySubmissions = () => api.get("/my-submissions");
 
 // Nilai akhir
 export const getGrades = () => api.get("/grades");
 
 // Absensi
 export const getAttendance = (classId) => api.get(`/classes/${classId}/attendance`);
+export const getAttendanceDetail = (id) => api.get(`/attendance/${id}/detail`);
 export const createAttendance = (classId, payload) => api.post(`/classes/${classId}/attendance`, payload);
 export const updateAttendance = (id, payload) => api.put(`/attendance/${id}`, payload);
 export const deleteAttendance = (id) => api.delete(`/attendance/${id}`);
+export const isiAttendance = (id, payload) => api.post(`/attendance/${id}/isi`, payload);
 
 // Pengumuman
 export const getAnnouncements = () => api.get("/announcements");

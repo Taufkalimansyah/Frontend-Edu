@@ -164,9 +164,6 @@ export default function Sidebar() {
                     <p className="text-xs text-slate-400">
                         © 2026 EduOnline v2.0
                     </p>
-                    <p className="text-[10px] text-slate-300 mt-0.5">
-                        Made with ❤️ for education
-                    </p>
                 </div>
             </div>
         </aside>

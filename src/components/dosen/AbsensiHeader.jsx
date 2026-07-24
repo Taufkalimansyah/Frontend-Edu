@@ -1,10 +1,6 @@
-import { Search, Filter, Plus, CalendarDays } from "lucide-react";
+import { Filter, Plus, CalendarDays } from "lucide-react";
 
 export default function AbsensiHeader({
-    searchTerm,
-    setSearchTerm,
-    filterStatus,
-    setFilterStatus,
     filterKelas,
     setFilterKelas,
     kelasList,
@@ -30,31 +26,7 @@ export default function AbsensiHeader({
             </div>
             
             <div className="flex flex-col sm:flex-row gap-3">
-                <div className="relative">
-                    <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                    <input
-                        type="text"
-                        placeholder="Cari mahasiswa..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10 pr-4 py-2.5 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 outline-none w-full sm:w-56 transition-all duration-300"
-                    />
-                </div>
-                
-                <div className="relative">
-                    <Filter size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                    <select
-                        value={filterStatus}
-                        onChange={(e) => setFilterStatus(e.target.value)}
-                        className="pl-10 pr-8 py-2.5 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 outline-none bg-white appearance-none w-full sm:w-auto"
-                    >
-                        <option value="semua">Semua Status</option>
-                        <option value="hadir">Hadir</option>
-                        <option value="izin">Izin</option>
-                        <option value="alpha">Alpha</option>
-                    </select>
-                </div>
-
+                {/* Filter Kelas */}
                 <div className="relative">
                     <Filter size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                     <select
